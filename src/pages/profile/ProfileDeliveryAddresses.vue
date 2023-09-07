@@ -1,7 +1,8 @@
 <template>
   <div
     v-if="$deliveryAddress.items.length"
-    style="max-width: 416px; width: 100%; height: fit-content"
+    :style="$q.screen.xs ? '' : 'max-width: 416px;'"
+    style="width: 100%; height: fit-content"
     class="column px-5 bg-backing-color border-radius text-on-backing-color"
   >
     <template v-for="(el, index) in $deliveryAddress.items" :key="index">
@@ -24,7 +25,8 @@
   </div>
   <div
     v-else
-    style="width: 416px; height: 200px"
+    :style="$q.screen.xs ? '' : 'width: 416px;'"
+    style="height: 200px"
     class="bg-backing-color text-on-backing-color border-radius box-shadow column no-wrap justify-center items-center gap-10"
   >
     <CIcon
@@ -39,7 +41,11 @@
     </div>
   </div>
   <div class="row full-width mt-15">
-    <div style="max-width: 416px; width: 100%" class="row justify-center">
+    <div
+      :style="$q.screen.xs ? '' : 'max-width: 416px;'"
+      style="width: 100%"
+      class="row justify-center"
+    >
       <CButton
         width="280px"
         height="50px"

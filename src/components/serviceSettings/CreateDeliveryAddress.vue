@@ -1,5 +1,5 @@
 <template>
-  <div class="column items-center text-on-background-color">
+  <div class="column items-center text-on-background-color pb-10">
     <div v-if="newAddress" class="column px-1 full-width gap-10">
       <CInput
         height="42px"
@@ -44,6 +44,7 @@
     <CButton
       @click="createAddress()"
       height="50px"
+      :disabled="!isSaveAvailable"
       class="mt-15"
       width="280px"
       label="Сохранить"
@@ -55,7 +56,7 @@ import { DeliveryAddress } from 'src/models/customer/deliveryAddress/deliveryAdd
 import CButton from '../template/buttons/CButton.vue'
 import AddressSearch from '../template/inputs/AddressSearch.vue'
 import CInput from '../template/inputs/CInput.vue'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { deliveryAddressRepo } from 'src/models/customer/deliveryAddress/deliveryAddressRepo'
 import { Notify } from 'quasar'
 import { Address } from 'src/models/types'
@@ -65,6 +66,15 @@ const props = defineProps<{
 }>()
 
 const newAddress = ref<DeliveryAddress | null>(null)
+
+const isSaveAvailable = computed(() => {
+  return (
+    !!newAddress.value?.name?.length &&
+    !!newAddress.value.address.length &&
+    !!newAddress.value.floor?.length &&
+    !!newAddress.value.entrance?.length
+  )
+})
 
 onMounted(() => {
   newAddress.value = new DeliveryAddress({

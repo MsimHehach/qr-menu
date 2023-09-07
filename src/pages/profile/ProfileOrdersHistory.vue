@@ -15,7 +15,10 @@
         {{ el.label }}
       </div>
     </div>
-    <div class="column mt-15 gap-10" style="max-width: 550px">
+    <div
+      class="column mt-15 gap-10"
+      :style="$q.screen.xs ? '' : 'max-width: 550px'"
+    >
       <template v-if="$order.items.length">
         <ProfileOrderRow
           v-for="(order, index) in $order.items"
@@ -25,7 +28,8 @@
       </template>
       <div
         v-else
-        style="width: 416px; height: 200px"
+        :style="$q.screen.xs ? '' : 'width: 416px'"
+        style="height: 200px"
         class="bg-backing-color text-on-backing-color border-radius box-shadow column justify-center items-center gap-10"
       >
         <CIcon

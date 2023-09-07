@@ -3,42 +3,44 @@
     <div class="c-container full-height column">
       <div style="height: 60px" class="row no-wrap items-center">
         <div
-          class="col-2 row cursor-pointer"
+          class="col-sm-5 col-md-3 col-lg-2 col-xs-5 row cursor-pointer"
           @click="$router.push({ name: 'home' })"
         >
-          <img height="55" :src="$uiSettings.item?.logo?.thumbnail" />
+          <img height="50" :src="$uiSettings.item?.logo?.thumbnail" />
         </div>
         <div class="col-grow row gap-15 body">
           <ServiceSettingsBlock v-if="authentication.user" />
 
           <ServiceSettingsSkeleton v-if="authentication.loading" />
-          <CButton
-            v-if="$news.items.length"
-            @click="scrollToBlock('offers', 'Новости')"
-            class="body pl-10"
-            label="Новости"
-            text-button
-            text-color="on-background-color"
-          />
-          <CButton
-            v-if="$promotion.items.length"
-            @click="scrollToBlock('offers', 'Акции')"
-            class="body"
-            label="Акции"
-            text-button
-            text-color="on-background-color"
-          />
-          <CButton
-            @click="scrollToBlock('footer')"
-            class="body"
-            label="Контакты"
-            text-button
-            text-color="on-background-color"
-          />
+          <template v-if="!$q.screen.lt.md">
+            <CButton
+              v-if="$news.items.length"
+              @click="scrollToBlock('offers', 'Новости')"
+              class="body pl-10"
+              label="Новости"
+              text-button
+              text-color="on-background-color"
+            />
+            <CButton
+              v-if="$promotion.items.length"
+              @click="scrollToBlock('offers', 'Акции')"
+              class="body"
+              label="Акции"
+              text-button
+              text-color="on-background-color"
+            />
+            <CButton
+              @click="scrollToBlock('footer')"
+              class="body"
+              label="Контакты"
+              text-button
+              text-color="on-background-color"
+            />
+          </template>
         </div>
         <div class="row no-wrap gap-8">
-          <CButton
-            v-if="authentication.user"
+          <!-- <CButton
+            v-if="authentication.user && !$q.screen.sm"
             class="box-shadow"
             height="33px"
             style="border-radius: 100px"
@@ -50,7 +52,7 @@
                 ? authentication.user.wallets[0].balance
                 : 'Бонусы'
             }}</CButton
-          >
+          > -->
 
           <CButton
             v-if="!authentication.loading"

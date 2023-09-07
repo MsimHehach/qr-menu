@@ -26,6 +26,7 @@
       {{ error ? 'Произошла ошибка' : 'Сейчас вы будете перенаправлены' }}
     </div>
     <CButton
+      v-if="currentLink"
       @click="toLink()"
       :style="`visibility: ${
         !error && !preloader && !loader ? 'visible' : 'hidden'
@@ -41,19 +42,18 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
-import { useQuasar } from 'quasar';
-import { appSettingsRepo } from 'src/models/appSettings/appSettingsRepo';
-import { useRoute } from 'vue-router';
-import { uiSettingsRepo } from 'src/models/uiSettings/uiSettingsRepo';
-import CButton from 'src/components/template/buttons/CButton.vue';
+import { computed, onMounted, ref } from 'vue'
+import { useQuasar } from 'quasar'
+import { appSettingsRepo } from 'src/models/appSettings/appSettingsRepo'
+import { useRoute } from 'vue-router'
+import CButton from 'src/components/template/buttons/CButton.vue'
 // import QrcodeVue from 'qrcode.vue';
 
-const q = useQuasar();
-const loader = ref(false);
-const preloader = ref(false);
-const route = useRoute();
-const error = ref(false);
+const q = useQuasar()
+const loader = ref(false)
+const preloader = ref(false)
+const route = useRoute()
+const error = ref(false)
 
 // const sexOptions = ref([
 //   {
@@ -93,32 +93,20 @@ const error = ref(false);
 //   }
 // };
 onMounted(async () => {
-  loader.value = true;
-  preloader.value = true;
-
+  loader.value = true
+  preloader.value = true
   try {
-    uiSettingsRepo.item = await uiSettingsRepo.fetchSettings(
-      String(route.params.externalId)
-    );
+    await appSettingsRepo.getLinksSettings(String(route.params.externalId))
 
-    preloader.value = false;
+    if (currentLink.value) window.location.replace(currentLink.value)
+
+    loader.value = false
   } catch (e) {
-    console.log(e);
-    error.value = true;
-    preloader.value = false;
+    loader.value = false
+    console.log(e)
+    error.value = true
   }
-  try {
-    await appSettingsRepo.getLinksSettings(String(route.params.externalId));
-
-    if (currentLink.value) window.location.replace(currentLink.value);
-
-    loader.value = false;
-  } catch (e) {
-    loader.value = false;
-    console.log(e);
-    error.value = true;
-  }
-});
+})
 //
 // const qrBlockData = ref({
 //   balance: 0,
@@ -280,16 +268,24 @@ onMounted(async () => {
 // };
 
 const currentLink = computed(() => {
-  return q.platform.is.android
-    ? appSettingsRepo.linksData?.android_download_link
-    : q.platform.is.ios || q.platform.is.iphone || q.platform.is.ipad
-    ? appSettingsRepo.linksData?.ios_download_link
-    : appSettingsRepo.linksData?.android_download_link;
-});
+  const data = appSettingsRepo.linksData
+  console.log(q.platform.is.mac)
+  if (!data) return null
+  if (data.app_download_link) return data.app_download_link
+  if (
+    q.platform.is.ios ||
+    q.platform.is.iphone ||
+    q.platform.is.ipad ||
+    q.platform.is.mac
+  )
+    return data.ios_download_link
+  return data.android_download_link
+})
 
 const toLink = () => {
-  window.open(currentLink.value, '_blank');
-};
+  if (!currentLink.value) return
+  window.open(currentLink.value, '_blank')
+}
 </script>
 
 <style scoped lang="scss">

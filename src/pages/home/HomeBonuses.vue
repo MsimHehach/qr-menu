@@ -1,10 +1,10 @@
 <template>
   <div>
-    <div class="header mb-12">Мои бонусы</div>
-    <div class="row full-width no-wrap gap-10">
+    <div class="header mb-sm-12 mb-xs-8">Мои бонусы</div>
+    <div class="row full-width no-wrap gap-10 py-xs-7">
       <div
         v-if="authentication.user?.wallets.find((v) => v.type === 'bonus')"
-        class="col-3"
+        :style="$q.screen.xs ? 'width: 100%' : 'min-width: 337px'"
       >
         <div
           class="row no-wrap bg-bonus-color pa-3 justify-between border-radius box-shadow bonus-block"
@@ -37,7 +37,7 @@
           </div>
         </div>
       </div>
-      <!-- <div class="col-3">
+      <!-- <div style="min-width: 337px">
         <div
           class="row no-wrap bg-sale-color pa-3 justify-between border-radius box-shadow bonus-block"
         >
@@ -65,7 +65,7 @@
           </div>
         </div>
       </div>
-      <div class="col-3">
+      <div style="min-width: 337px">
         <div
           class="row box-shadow text-white bg-gift-color pa-3 justify-between border-radius bonus-block"
         >

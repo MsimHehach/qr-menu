@@ -21,8 +21,9 @@
         v-if="currentStep === 2"
         @click="currentStep = 1"
         icon="fa-light fa-angle-left"
-        color="white"
-        icon-color="black"
+        color="white-opacity"
+        icon-class="box-shadow"
+        icon-color="on-secondary-button-color"
         hover-icon-color="primary"
         size="30px"
       />
@@ -52,15 +53,19 @@
         unmasked-value
         v-model="data.phone"
       />
-      <CInput
-        v-else
-        v-model="data.sms"
-        input-class="header3 input text-on-input-color"
-        height="50px"
-        class="mb-11"
-        standout
-        mask="####"
-      />
+      <div v-else class="row full-width justify-center">
+        <CInput
+          v-model="data.sms"
+          input-class="header3 input text-on-input-color"
+          height="50px"
+          width="200px"
+          style="overflow-x: hidden"
+          :class="data.sms.length ? 'center-content' : ''"
+          class="mb-11 sms-field"
+          standout
+          mask="####"
+        />
+      </div>
       <div
         v-if="currentStep === 2"
         @click="delay ? void 0 : sendSms()"
@@ -70,17 +75,20 @@
       >
         {{ !!delay ? `Отправить еще раз (${delay} сек)` : 'Отправить еще раз' }}
       </div>
-
-      <q-checkbox
-        v-if="currentStep === 1"
-        v-model="data.agreement"
-        color="primary"
-      >
-        <div class="secondary-text">
+      <div v-if="currentStep === 1" class="row no-wrap items-center">
+        <q-checkbox v-model="data.agreement" color="primary"> </q-checkbox>
+        <div
+          @click="data.agreement = !data.agreement"
+          class="secondary-text cursor-pointer"
+        >
           {{ 'Я согласен на обработку моих '
-          }}<span style="text-decoration: underline">персональных данных</span>
-        </div></q-checkbox
-      >
+          }}<span
+            @click.capture.stop="openPolicy()"
+            style="text-decoration: underline"
+            >персональных данных</span
+          >
+        </div>
+      </div>
       <CButton
         @click="nextStepHandler()"
         height="50px"
@@ -100,14 +108,18 @@ import CIconButton from 'src/components/template/buttons/CIconButton.vue'
 import CDialog from 'src/components/template/dialogs/CDialog.vue'
 import CInput from 'src/components/template/inputs/CInput.vue'
 import { authentication } from 'src/models/authentication/authentication'
+import { cartRepo } from 'src/models/carts/cartRepo'
 
 import { ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
 
 const delay = ref(30)
 let interval: NodeJS.Timeout | null = null
 
+const route = useRoute()
+
 const data = ref({
-  phone: '',
+  phone: '7',
   sms: '',
   agreement: false,
 })
@@ -118,9 +130,38 @@ defineProps<{
   modelValue: boolean
 }>()
 
+const openPolicy = () => {
+  window.open(
+    `https://loyal.corex.studio/${String(route.params.companyGroup)}/policy`,
+    '_blank'
+  )
+}
+
 const emit = defineEmits<{
   (evt: 'update:modelValue', value: boolean): void
 }>()
+
+// watch(
+//   () => props.modelValue,
+//   (v) => {
+//     if (v) {
+//       data.value = {
+//         phone: '',
+//         sms: '',
+//         agreement: false,
+//       }
+//     }
+//   }
+// )
+
+watch(
+  () => currentStep.value,
+  (v) => {
+    if (v === 1 && interval) {
+      clearInterval(interval)
+    }
+  }
+)
 
 const nextStepHandler = async () => {
   if (currentStep.value === 1) {
@@ -129,15 +170,8 @@ const nextStepHandler = async () => {
       currentStep.value = 2
     }
   } else {
-    try {
-      await auth()
-      // window.location.reload();
-    } catch {
-      Notify.create({
-        message: 'Ошибка при авторизации',
-        color: 'danger',
-      })
-    }
+    await auth()
+    await cartRepo.current()
   }
 }
 
@@ -147,6 +181,7 @@ const auth = async () => {
       phone: `7${data.value.phone}`,
       code: data.value.sms,
     })
+
     Notify.create({
       message: 'Вы успешно авторизованы',
     })
@@ -182,31 +217,19 @@ const sendSms = async () => {
   }
   return res
 }
-
-// watch(
-//   () => props.modelValue,
-//   (v) => {
-//     if (v) {
-//       currentStep.value = 1;
-//     }
-//   }
-// );
-
-watch(
-  () => currentStep.value,
-  (v) => {
-    if (v === 1 && interval) {
-      clearInterval(interval)
-    }
-  }
-)
 </script>
 
 <style lang="scss" scoped>
-.kek {
-  color: var(--kekKEK);
-}
 .input :deep(.q-field--standout.q-field-highlighted .q-field__control) {
   box-shadow: unset !important;
+}
+
+.sms-field :deep(.q-field__native) {
+  letter-spacing: 20px;
+  text-align: center;
+}
+
+.center-content :deep(.q-field__native) {
+  padding-left: 15px;
 }
 </style>

@@ -1,7 +1,8 @@
 <template>
   <div
     v-if="currentCards.length"
-    style="max-width: 416px; width: 100%; height: fit-content"
+    :style="$q.screen.xs ? '' : 'max-width: 416px;'"
+    style="width: 100%; height: fit-content"
     class="column px-5 bg-backing-color border-radius text-on-backing-color"
   >
     <div v-for="(el, index) in currentCards" :key="index">
@@ -45,7 +46,8 @@
   </div>
   <div
     v-else
-    style="width: 416px; height: 224px"
+    :style="$q.screen.xs ? '' : 'max-width: 416px;'"
+    style="height: 224px"
     class="bg-backing-color text-on-backing-color border-radius box-shadow column no-wrap justify-center items-center gap-10"
   >
     <CIcon

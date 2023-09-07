@@ -43,14 +43,15 @@
         <divs>
           <div class="bold mb-10 text-on-backing-color">Навигация</div>
           <div class="column text-black3 gap-7">
-            <div
-              v-for="(item, index) in navigation"
-              :key="index"
-              @click="item.click"
-              class="text-on-backing-color cursor-pointer"
-            >
-              {{ item.label }}
-            </div>
+            <template v-for="(item, index) in navigation" :key="index">
+              <div
+                v-if="!item.hidden"
+                @click="item.click"
+                class="text-on-backing-color cursor-pointer secondary-text"
+              >
+                {{ item.label }}
+              </div>
+            </template>
           </div>
         </divs>
       </div>
@@ -151,6 +152,8 @@ import { appSettingsRepo } from 'src/models/appSettings/appSettingsRepo'
 import { computed, onMounted } from 'vue'
 import { companyRepo } from 'src/models/company/companyRepo'
 import { useRoute, useRouter } from 'vue-router'
+import { newsRepo } from 'src/models/news/newsRepo'
+import { promotionsRepo } from 'src/models/promotion/promotionsRepo'
 
 const route = useRoute()
 const router = useRouter()
@@ -173,48 +176,54 @@ const scrollToBlock = (v: string, tab?: string) => {
   }
 }
 
-const navigation = [
-  {
-    label: 'Новости',
-    click: () => {
-      scrollToBlock('offers', 'Новости')
+const navigation = computed(() => {
+  return [
+    {
+      label: 'Новости',
+      hidden: !!!newsRepo.items.length,
+      click: () => {
+        scrollToBlock('offers', 'Новости')
+      },
     },
-  },
-  {
-    label: 'Акции',
-    click: () => {
-      scrollToBlock('offers', 'Акции')
+    {
+      label: 'Акции',
+      hidden: !promotionsRepo.items.length,
+      click: () => {
+        scrollToBlock('offers', 'Акции')
+      },
     },
-  },
-  {
-    label: 'О разработчике',
-    click: () => {
-      openLink('https://corex.studio/')
+    {
+      label: 'О разработчике',
+      click: () => {
+        openLink('https://corex.studio/')
+      },
     },
-  },
-  {
-    label: 'Политика конфиденциальности',
-    click: () => {
-      openLink(
-        `https://loyal.corex.studio/${String(route.params.companyGroup)}/policy`
-      )
+    {
+      label: 'Политика конфиденциальности',
+      click: () => {
+        openLink(
+          `https://loyal.corex.studio/${String(
+            route.params.companyGroup
+          )}/policy`
+        )
+      },
     },
-  },
-  {
-    label: 'Пользовательское соглашение',
-    click: () => {
-      openLink(
-        `https://loyal.corex.studio/${String(
-          route.params.companyGroup
-        )}/terms_of_service`
-      )
+    {
+      label: 'Пользовательское соглашение',
+      click: () => {
+        openLink(
+          `https://loyal.corex.studio/${String(
+            route.params.companyGroup
+          )}/terms_of_service`
+        )
+      },
     },
-  },
-  // {
-  //   label: 'cookie',
-  //   click: void 0,
-  // },
-]
+    // {
+    //   label: 'cookie',
+    //   click: void 0,
+    // },
+  ]
+})
 
 const showContacts = computed(() => {
   return (

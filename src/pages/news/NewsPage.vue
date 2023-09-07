@@ -4,9 +4,12 @@
     style="min-height: 450px"
     class="pt-20 text-on-background-color"
   >
-    <div class="row full-width justify-between">
-      <div class="column col-6" style="overflow-x: hidden">
-        <div class="header mb-15">{{ $news.item.title }}</div>
+    <div
+      :class="$q.screen.xs ? 'column reverse' : 'row '"
+      class="full-width justify-between"
+    >
+      <div class="column col-sm-6 col-xs-12" style="overflow-x: hidden">
+        <div class="header mb-sm-15 mb-xs-10">{{ $news.item.title }}</div>
 
         <div
           v-if="$news.item.fullDescription"
@@ -14,10 +17,14 @@
         ></div>
         <div v-else>-</div>
       </div>
-      <div class="col-5">
+      <div
+        :class="{ 'full-width': $q.screen.xs }"
+        class="col-sm-5 mb-xs-10 mb-sm-0"
+      >
         <q-img
           v-if="$news.item.images.length < 2"
-          style="max-height: 300px"
+          style="max-height: 500px; height: 100%"
+          :style="$q.screen.xs ? 'height: 200px' : ''"
           class="rounded-15"
           fit="contain"
           :src="$news.item.image?.thumbnail || $store.images.empty"
@@ -27,7 +34,7 @@
               <q-img
                 class="user-image"
                 fit="cover"
-                height="300px"
+                :height="$q.screen.xs ? '200px' : '320px'"
                 :src="$store.images.empty"
               ></q-img>
             </span> </template
@@ -46,15 +53,15 @@
               class="border-radius"
               :src="item.thumbnail || $store.images.empty"
               fit="contain"
-              style="max-height: 300px; min-height: 300px"
+              style="max-height: 320px; min-height: 320px"
             >
               <template v-slot:error>
                 <span>
                   <q-img
                     class="border-radius"
                     style="
-                      max-height: 300px !important;
-                      min-height: 300px !important;
+                      max-height: 320px !important;
+                      min-height: 320px !important;
                     "
                     :src="$store.images.empty"
                   ></q-img>

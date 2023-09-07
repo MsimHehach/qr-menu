@@ -5,13 +5,14 @@
       class="c-container"
       @update-tab="$store.offersTab = $event"
       :tabs="tabs"
+      :width="$q.screen.xs ? '100%' : undefined"
       :model-value="$store.offersTab"
     />
 
     <SwiperContainer
       use-bullets
       class="swiper"
-      :slides-per-view="4"
+      :slides-per-view="slidesPerView"
       :items="$store.offersTab === 'Новости' ? $news.items : $promotion.items"
     >
       <template v-slot:item="{ item }">
@@ -104,6 +105,11 @@ import { uiSettingsRepo } from 'src/models/uiSettings/uiSettingsRepo'
 import CButton from 'src/components/template/buttons/CButton.vue'
 import { newsRepo } from 'src/models/news/newsRepo'
 import { promotionsRepo } from 'src/models/promotion/promotionsRepo'
+import { useQuasar } from 'quasar'
+
+const router = useRouter()
+
+const q = useQuasar()
 
 const tabs = computed(() => {
   const result = []
@@ -112,7 +118,9 @@ const tabs = computed(() => {
   return result
 })
 
-const router = useRouter()
+const slidesPerView = computed(() => {
+  return q.screen.xs ? 1.3 : q.screen.sm ? 2.2 : 4
+})
 
 const getBorderRadius = computed(() => {
   return `${uiSettingsRepo.item?.borderRadius}px ${uiSettingsRepo.item?.borderRadius}px 0 0`

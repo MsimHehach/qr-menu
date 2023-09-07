@@ -1,6 +1,9 @@
 <template>
   <div v-if="$cart.item" class="px-10 column pb-10">
-    <div v-if="authentication.user" class="column full-width gap-8 mb-15">
+    <div
+      v-if="authentication.user && $cart.item.walletPayments.length"
+      class="column full-width gap-8 mb-15"
+    >
       <WalletSlider
         v-for="(el, index) in $cart.item.walletPayments"
         :key="index"
@@ -8,8 +11,10 @@
         @apply="applyClickHandler(el)"
       />
     </div>
+
     <div class="column">
       <div class="header2 mb-10">Итого</div>
+
       <div class="box-shadow border-radius py-6 px-5 column gap-7">
         <div
           v-for="(el, index) in resultRows"
@@ -39,7 +44,12 @@
         </div>
       </div>
 
-      <div class="row items-end gap-5 mt-10">
+      <div
+        v-if="
+          $cart.item.salesPoint.settings.promo_codes !== PromoCodeMode.DISABLED
+        "
+        class="row items-end gap-5 mt-10"
+      >
         <CInput
           v-model="promocode"
           default
@@ -56,7 +66,7 @@
           label="Применить"
         />
       </div>
-      <CInput
+      <!-- <CInput
         :model-value="$cart.item.deliveryTime"
         class="mt-10"
         default
@@ -75,7 +85,24 @@
               :model-value="currentDay"
             /> </q-time
         ></q-menu>
-      </CInput>
+      </CInput> -->
+      <TimePicker
+        label="Время доставки"
+        :options="kek"
+        @update-time="setDeliveryTime($event)"
+        height="50px"
+        class="mt-10"
+        :day="currentDay"
+        :date="$cart.item.deliveryTime"
+      >
+        <TabPicker
+          class="px-5 pt-5"
+          small
+          @update-tab="currentDay = $event"
+          :tabs="['Сегодня', 'Завтра']"
+          :model-value="currentDay"
+      /></TimePicker>
+
       <div v-if="showPaymentTypes" class="row full-width gap-8 mt-15">
         <div
           v-for="(type, index) in paymentTypes"
@@ -129,6 +156,8 @@ import { Notify } from 'quasar'
 import { sum } from 'lodash'
 import WalletSlider from './WalletSlider.vue'
 import { WalletPaymentRaw } from 'src/models/carts/cart'
+import { PromoCodeMode } from 'src/models/salesPoint/salesPoint'
+import TimePicker from 'src/components/inputs/TimePicker.vue'
 
 defineProps<{
   showPaymentTypes: boolean
@@ -215,32 +244,54 @@ const resultRows = computed(() => {
   ]
 })
 
-const dateOptions = (hr: number, min: number | null) => {
-  if (!availableHours.value) return
-  for (const v of currentDay.value === 'Сегодня'
-    ? availableHours.value?.today
-    : availableHours.value.tomorrow) {
-    const startTime = moment
-      .utc(v.start, 'YYYY-MM-DD HH:mm:ss')
-      .local()
-      .format('HH:mm')
-    const endTime = moment
-      .utc(v.end, 'YYYY-MM-DD HH:mm:ss')
-      .local()
-      .format('HH:mm')
+const kek = computed(() => {
+  return currentDay.value === 'Сегодня'
+    ? availableHours.value?.today.map((v) => {
+        return {
+          start: moment
+            .utc(v.start, 'YYYY-MM-DD HH:mm')
+            .local()
+            .format('HH:mm'),
+          end: moment.utc(v.end, 'YYYY-MM-DD HH:mm').local().format('HH:mm'),
+        }
+      })
+    : availableHours.value?.tomorrow.map((v) => {
+        return {
+          start: moment
+            .utc(v.start, 'YYYY-MM-DD HH:mm')
+            .local()
+            .format('HH:mm'),
+          end: moment.utc(v.end, 'YYYY-MM-DD HH:mm').local().format('HH:mm'),
+        }
+      })
+})
 
-    const startHour = Number(startTime.split(':')[0])
-    const endHour = Number(endTime.split(':')[0])
-    const startMin = Number(startTime.split(':')[1])
-    const endMin = Number(endTime.split(':')[1])
+// const dateOptions = (hr: number, min: number | null) => {
+//   if (!availableHours.value) return
+//   for (const v of currentDay.value === 'Сегодня'
+//     ? availableHours.value?.today
+//     : availableHours.value.tomorrow) {
+//     const startTime = moment
+//       .utc(v.start, 'YYYY-MM-DD HH:mm:ss')
+//       .local()
+//       .format('HH:mm')
+//     const endTime = moment
+//       .utc(v.end, 'YYYY-MM-DD HH:mm:ss')
+//       .local()
+//       .format('HH:mm')
 
-    if (hr < startHour) return false
-    if (hr > endHour) return false
-    if (min !== null && hr === startHour && min < startMin) return false
-    if (min !== null && hr === endHour && min > endMin) return false
-    return true
-  }
-}
+//     const startHour = Number(startTime.split(':')[0])
+//     const endHour = Number(endTime.split(':')[0])
+//     const startMin = Number(startTime.split(':')[1])
+//     const endMin = Number(endTime.split(':')[1])
+
+//     if (hr < startHour) return false
+//     if (hr > endHour) return false
+//     if (min !== null && hr === startHour && min < startMin) return false
+//     if (min !== null && hr === endHour && min > endMin) return false
+//     return true
+//   }
+// }
 
 const applyPromocode = async () => {
   if (!cartRepo.item) return
@@ -279,10 +330,14 @@ const setDeliveryTime = (v: string | null) => {
   if (!cartRepo.item) return
   const today = moment().format('DD.MM.YYYY')
   const tomorrow = moment().add(1, 'day').format('DD.MM.YYYY')
-  if (currentDay.value === 'Сегодня') {
-    cartRepo.item.deliveryTime = [today, v].join(' ')
+  if (v === 'error') {
+    cartRepo.item.deliveryTime = 'Не указано'
   } else {
-    cartRepo.item.deliveryTime = [tomorrow, v].join(' ')
+    if (currentDay.value === 'Сегодня') {
+      cartRepo.item.deliveryTime = [today, v].join(' ')
+    } else {
+      cartRepo.item.deliveryTime = [tomorrow, v].join(' ')
+    }
   }
 }
 

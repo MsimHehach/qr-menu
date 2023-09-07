@@ -2,9 +2,9 @@
   <div>
     <div
       v-if="$companyGroup.item && $companyGroup.item.companies.length > 1"
-      class="row border-radius gap-20 no-wrap items-center mt-25"
+      class="row border-radius gap-md-20 gap-sm-10 gap-xs-5 items-center mt-sm-20 mt-md-25 mt-xs-15"
     >
-      <div class="row items-center gap-8">
+      <div class="row no-wrap items-center gap-8 pr-10">
         <q-img
           class="border-radius"
           fit="contain"
@@ -30,6 +30,7 @@
 
       <CButton @click="changeCompany()" label="Выбрать другое заведение" />
     </div>
+    <div v-else class="header mt-18">{{ $menu.item?.name }}</div>
     <!-- <div class="row full-width mt-10 gap-10">
       <div
         @click="selectCompany(el)"
@@ -69,15 +70,19 @@
           {{ el.name }}
         </div>
         <div v-if="el.items.length" class="row full-width">
-          <!-- <div v-for="(el2, index2) in el.items" :key="index2" class="col-2"> -->
-          <GridContainer :items="el.items" :lg="6" :xl="6" :md="5" :sm="4">
+          <GridContainer
+            products
+            :items="el.items"
+            :lg="6"
+            :xl="6"
+            :md="4"
+            :sm="3"
+            :xs="2"
+          >
             <template v-slot:item="{ item }">
-              <!-- <MenuItemSkeleton v-if="$salesPoint.menuLoading" /> -->
               <MenuItemCard :item="(item as MenuItem)" />
             </template>
           </GridContainer>
-
-          <!-- </div> -->
         </div>
         <div v-else>Пусто</div>
       </div>

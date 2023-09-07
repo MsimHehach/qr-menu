@@ -1,7 +1,7 @@
 <template>
   <div
     @click="openDialog()"
-    class="row no-wrap gap-3 py-2 pl-5 pr-7 cursor-pointer box-shadow border-radius items-center"
+    class="row no-wrap gap-3 py-2 pl-xs-3 pl-sm-5 pr-xs-3 pr-sm-7 cursor-pointer box-shadow border-radius items-center"
     :class="
       $cart.item?.type === 'delivery'
         ? 'bg-delivery-button-color text-on-delivery-button-color'
@@ -11,7 +11,13 @@
         ? 'bg-booking-button-color text-on-booking-button-color'
         : 'background-color text-on-background-color'
     "
-    :style="$cart.item ? 'max-width: 350px;' : ''"
+    :style="
+      $cart.item
+        ? $q.screen.sm
+          ? 'max-width: 250px'
+          : 'max-width: 350px;'
+        : ''
+    "
     style="overflow: hidden"
   >
     <div style="background-color: #ffffff7f" class="border-radius px-4 py-3">
@@ -28,7 +34,7 @@
         "
       />
     </div>
-    <div class="column col gap-1">
+    <div v-if="!$q.screen.xs" class="column col gap-1">
       <div style="line-height: 18px" class="bold">
         {{ $cart.item ? currentDeliveryType() : 'Укажите тип доставки' }}
       </div>
@@ -39,27 +45,12 @@
       </div>
     </div>
   </div>
-  <ServiceSettingsModal
-    :model-value="dialog"
-    @update:model-value="dialogCloseHandler()"
-  />
-  <SelectCompanyModal
-    :model-value="selectCompanyModal"
-    @update:model-value="companySelectModalCloseHandler"
-    @select="companySelected($event)"
-  />
 </template>
 <script lang="ts" setup>
 import { cartRepo } from 'src/models/carts/cartRepo'
-import ServiceSettingsModal from './ServiceSettingsModal.vue'
-import { companyRepo } from 'src/models/company/companyRepo'
-import { ref, computed } from 'vue'
-import SelectCompanyModal from '../dialogs/SelectCompanyModal.vue'
-import { Company } from 'src/models/company/company'
+import { computed } from 'vue'
 import { companyGroupRepo } from 'src/models/companyGroup/companyGroupRepo'
-
-const dialog = ref(false)
-const selectCompanyModal = ref(false)
+import { store } from 'src/models/store'
 
 const currentAddress = computed(() => {
   return cartRepo.item
@@ -70,26 +61,12 @@ const currentAddress = computed(() => {
     : ''
 })
 
-const companySelected = (v: Company) => {
-  companyRepo.cartCompany = v
-  selectCompanyModal.value = false
-  dialog.value = true
-}
-
-const companySelectModalCloseHandler = () => {
-  selectCompanyModal.value = false
-}
-
-const dialogCloseHandler = () => {
-  dialog.value = false
-}
-
 const openDialog = () => {
   if (!companyGroupRepo.item) return
   if (companyGroupRepo.item?.companies.length > 1) {
-    selectCompanyModal.value = true
+    store.selectCompanyModal = true
   } else {
-    dialog.value = true
+    store.serviceSettingsModal = true
   }
 }
 

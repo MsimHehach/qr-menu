@@ -43,7 +43,7 @@
         <q-pagination
           color="secondary"
           active-color="primary"
-          class="ml-13"
+          class="ml-13 pagination"
           flat
           :modelValue="page"
           @update:modelValue="$emit('update:modelValue', $event)"
@@ -137,4 +137,8 @@ defineProps({
 })
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.pagination :deep(.q-btn--actionable.q-btn--standard:before) {
+  box-shadow: none;
+}
+</style>

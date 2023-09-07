@@ -76,24 +76,29 @@
         class="bg-transparent full-height"
       >
         <q-tab-panel name="select" class="pa-0 column no-wrap pt-10 px-10">
-          <!-- <div class="full-width header2 mb-10">Тип доставки</div> -->
-          <div class="row mb-15 no-wrap gap-5">
-            <CButton
-              v-for="(type, index) in availableCartTypes"
-              :key="index"
-              @click="currentTab = type.type"
-              :label="type.label"
-              :icon="type.icon"
-              :class="
-                currentTab === type.type
-                  ? type.class
-                  : 'text-on-secondary-button-color'
-              "
-              :color="
-                currentTab === type.type ? type.color : 'secondary-button-color'
-              "
-            />
-            <!-- <CButton
+          <div class="full-width">
+            <div
+              :style="$q.screen.xs ? 'overflow-x: auto' : ''"
+              class="row full-width no-wrap mb-15 gap-5"
+            >
+              <CButton
+                v-for="(type, index) in availableCartTypes"
+                :key="index"
+                @click="currentTab = type.type"
+                :label="type.label"
+                :icon="type.icon"
+                :class="
+                  currentTab === type.type
+                    ? type.class
+                    : 'text-on-secondary-button-color'
+                "
+                :color="
+                  currentTab === type.type
+                    ? type.color
+                    : 'secondary-button-color'
+                "
+              />
+              <!-- <CButton
               v-if="
                 $company.item?.salesPoints?.some(
                   (v) => v.settings.delivery_enabled
@@ -159,8 +164,8 @@
                   : 'secondary-button-color'
               "
             /> -->
+            </div>
           </div>
-
           <div
             :class="{
               'col-grow':

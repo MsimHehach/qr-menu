@@ -1,8 +1,9 @@
 <template>
   <template v-if="ready">
     <PrepareUiSettings />
-    <q-layout view="lHh Lpr lFf" class="bg-background-color">
+    <q-layout view="lHh Lpr lFf" class="bg-background-color pb-xs-27 pb-sm-0">
       <div
+        ref="header"
         style="position: sticky; top: 0px; z-index: 99"
         :style="
           $store.verticalScroll > 45
@@ -10,10 +11,16 @@
             : ''
         "
       >
-        <MainHeader />
-        <BottomHeader />
+        <template v-if="!$q.screen.xs">
+          <MainHeader />
+          <BottomHeader />
+        </template>
+        <div class="full-width" v-if="$q.screen.lt.sm">
+          <MobileMenu />
+        </div>
       </div>
       <q-page-container
+        :style="`min-height: calc(100vh - ${footerAndHeaderHeight}px);`"
         :class="{
           'c-container':
             $route.name !== 'home' &&
@@ -24,15 +31,29 @@
         style="padding-bottom: 50px"
       >
         <router-view />
+        <CartDrawer />
       </q-page-container>
 
       <q-footer>
-        <CFooter />
+        <CFooter
+          ref="footer"
+          class="full-width"
+          style="bottom: 0; z-index: 2100"
+        />
       </q-footer>
     </q-layout>
     <AuthModal
       :model-value="$store.authModal"
       @update:model-value="$store.authModal = $event"
+    />
+    <ServiceSettingsModal
+      :model-value="$store.serviceSettingsModal"
+      @update:model-value="$store.serviceSettingsModal = false"
+    />
+    <SelectCompanyModal
+      :model-value="$store.selectCompanyModal"
+      @update:model-value="$store.selectCompanyModal = false"
+      @select="companySelected($event)"
     />
   </template>
 </template>
@@ -40,8 +61,8 @@
 <script setup lang="ts">
 import MainHeader from './header/MainHeader.vue'
 import CFooter from 'src/layouts/footer/CFooter.vue'
-import { useQuasar } from 'quasar'
-import { onMounted, ref, watch } from 'vue'
+import { Screen, useQuasar } from 'quasar'
+import { onMounted, ref, watch, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { store } from 'src/models/store'
 import BottomHeader from './header/BottomHeader.vue'
@@ -56,6 +77,12 @@ import { newsRepo } from 'src/models/news/newsRepo'
 import { promotionsRepo } from 'src/models/promotion/promotionsRepo'
 import { salesPointRepo } from 'src/models/salesPoint/salesPointRepo'
 import { appSettingsRepo } from 'src/models/appSettings/appSettingsRepo'
+import MobileMenu from './MobileMenu.vue'
+import CartDrawer from './drawer/cart/CartDrawer.vue'
+import ServiceSettingsModal from 'src/components/serviceSettings/ServiceSettingsModal.vue'
+import SelectCompanyModal from 'src/components/dialogs/SelectCompanyModal.vue'
+import { Company } from 'src/models/company/company'
+import { companyRepo } from 'src/models/company/companyRepo'
 
 const webSocket = ref<WebSocket | null>(null)
 
@@ -65,6 +92,11 @@ const q = useQuasar()
 const route = useRoute()
 const router = useRouter()
 const ready = ref(false)
+
+const header = ref<HTMLDivElement>()
+const footer = ref<HTMLDivElement>()
+const footerHeight = ref(0)
+const headerHeight = ref(0)
 
 watch(
   () => authentication.user?.id,
@@ -81,13 +113,6 @@ watch(
   }
 )
 
-const setBodyScrollClass = () => {
-  if (q.platform.is.win) {
-    const body = document.getElementsByTagName('body')
-    if (body.length) body[0].classList.add('custom-scroll-bar')
-  }
-}
-
 watch(
   () => q.screen.name,
   () => {
@@ -96,6 +121,17 @@ watch(
     }
   }
 )
+
+const footerAndHeaderHeight = computed(() => {
+  return Screen.gt.sm ? headerHeight.value + footerHeight.value : '0'
+})
+
+const setBodyScrollClass = () => {
+  if (q.platform.is.win) {
+    const body = document.getElementsByTagName('body')
+    if (body.length) body[0].classList.add('custom-scroll-bar')
+  }
+}
 
 onMounted(async () => {
   window.addEventListener('scroll', () => {
@@ -108,21 +144,48 @@ onMounted(async () => {
   await uiSettingsRepo.fetchSettings()
   void appSettingsRepo.getLinksSettings(String(route.params.companyGroup))
 
+  setTimeout(() => {
+    headerHeight.value = header.value?.clientHeight || 0
+    footerHeight.value = footer.value?.clientHeight || 0
+    document.addEventListener('resize', () => {
+      headerHeight.value = header.value?.clientHeight || 0
+      footerHeight.value = footer.value?.clientHeight || 0
+    })
+  }, 50)
+
   try {
     await authentication.validateTokens()
     void authentication.me()
     await cartRepo.current()
   } catch {
-    // ready.value = true;
+    authentication.loading = false
+    ready.value = true
   }
 
-  if (!newsRepo.items.length) void newsRepo.list()
-  if (!promotionsRepo.items.length) void promotionsRepo.list()
-  // await menuRepo.list({
-  //   active: true,
-  // })
+  if (!newsRepo.items.length)
+    void newsRepo.list({
+      company_group: companyGroupRepo.item?.id,
+    })
+  if (!promotionsRepo.items.length)
+    void promotionsRepo.list({
+      company_group: companyGroupRepo.item?.id,
+    })
+  void store.loadCatalog(
+    cartRepo.item
+      ? cartRepo.item?.salesPoint
+      : companyGroupRepo.item?.companies[0]?.salesPoints
+      ? companyGroupRepo.item?.companies[0]?.salesPoints[0]
+      : ''
+  )
+
   ready.value = true
 })
+
+const companySelected = (v: Company) => {
+  companyRepo.cartCompany = v
+  store.selectCompanyModal = false
+  store.serviceSettingsModal = true
+}
 </script>
 
 <style lang="scss" scoped>

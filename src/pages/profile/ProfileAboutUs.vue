@@ -25,9 +25,10 @@
       />
     </q-breadcrumbs>
     <div
-      class="bg-accent border-radius pa-15 row items-center full-width no-wrap gap-25"
+      class="bg-accent border-radius pa-15 row items-center full-width gap-sm-25 gap-xs-20"
+      :class="$q.screen.lt.md ? '' : 'no-wrap'"
     >
-      <div class="column items-center gap-8 col-4">
+      <div class="column items-center gap-8 col-xs-12 col-md-4">
         <q-img
           class="border-radius"
           width="183px"
@@ -61,9 +62,9 @@
 
       <SwiperContainer
         no-navigation
-        class="swiper col mt-20"
+        class="swiper col mt-md-20"
         use-bullets
-        :slides-per-view="3.2"
+        :slides-per-view="slidesPerView"
         :items="company.images"
       >
         <template v-slot:item="{ item }">
@@ -154,10 +155,14 @@ import ProfileAddressesOnMap from './ProfileAddressesOnMap.vue'
 import SelectCompany from './SelectCompany.vue'
 import CHover from 'src/components/template/helpers/CHover.vue'
 import ContactsModal from './ContactsModal.vue'
+import { useQuasar } from 'quasar'
 
 const socialsModal = ref(false)
 
+const q = useQuasar()
+
 const concatsModal = ref(false)
+
 const currentContactType = ref<{
   label: string
   type: 'phones' | 'emails' | 'messages'
@@ -168,6 +173,10 @@ type ContactType = {
   icon: string
   field: 'phones' | 'emails' | 'messages'
 }
+
+const slidesPerView = computed(() => {
+  return q.screen.xs ? 1.2 : q.screen.sm ? 2 : 3.2
+})
 
 const contacts = computed(() => {
   const result: ContactType[] = []

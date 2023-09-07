@@ -1,13 +1,13 @@
 <template>
   <div
-    style="
-      min-width: 218px;
-      max-width: 218px;
+    :style="`min-width: ${$q.screen.xs ? 'unset' : '218px'};
+      max-width: ${$q.screen.xs ? 'unset' : '218px'};
       height: fit-content;
       position: sticky;
-    "
-    :style="$menu.item?.groups?.length ? 'top: 120px' : 'top: 60px'"
+      ${$menu.item?.groups?.length ? 'top: 120px' : 'top: 60px'}
+      `"
     class="column"
+    :class="{ 'full-width': $q.screen.xs }"
   >
     <div v-for="(el, index) in tabs" :key="index">
       <q-separator v-if="index" />

@@ -1,3 +1,4 @@
+import { customerRepo, CustomerRepo } from './../models/customer/customerRepo'
 import {
   AppSettingsRepo,
   appSettingsRepo,
@@ -69,6 +70,7 @@ declare module '@vue/runtime-core' {
     $paymentCard: PaymentCardRepo
     $company: CompanyRepo
     $appSettings: AppSettingsRepo
+    $customer: CustomerRepo
   }
 }
 
@@ -91,6 +93,5 @@ export default boot(({ app }) => {
   app.config.globalProperties.$paymentCard = paymentCardRepo
   app.config.globalProperties.$company = companyRepo
   app.config.globalProperties.$appSettings = appSettingsRepo
-
-  // app.config.globalProperties.$customer = customerRepo;
+  app.config.globalProperties.$customer = customerRepo
 })

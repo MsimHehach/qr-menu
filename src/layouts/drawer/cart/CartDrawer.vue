@@ -3,12 +3,12 @@
     <q-drawer
       side="right"
       style="z-index: 999999; height: 100%"
-      :style="`border-radius: ${drawerBorderRadius}`"
+      :style="`border-radius: ${$q.screen.xs ? '' : drawerBorderRadius}`"
       overlay
       v-model="$store.cartDrawer"
       no-swipe-open
       behavior="mobile"
-      :width="474"
+      :width="$q.screen.xs ? $q.screen.width : 474"
       class="column full-height no-wrap justify-between bg-background-color text-on-background-color"
     >
       <div class="column pb-20">

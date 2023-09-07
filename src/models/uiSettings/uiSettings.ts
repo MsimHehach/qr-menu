@@ -8,6 +8,23 @@ export type Color = {
   on_color: string
 }
 
+export type BottomBarElementType =
+  | 'home'
+  | 'arrange'
+  | 'cart'
+  | 'profile'
+  | 'booking'
+  | 'company_profile'
+  | 'pdf_menu'
+
+export type BottomBarElementRaw = {
+  active: boolean
+  semantic_label: BottomBarElementType
+  sorting: number
+  title: string
+  uuid: string
+}
+
 export type UiSettingsRaw = {
   uuid: string
   primary_color: Color
@@ -37,8 +54,8 @@ export type UiSettingsRaw = {
     background_color: string
   } | null
   background_image: string | null
-  loyalty_card_image: string | null
-  loyalty_card_logo: string | null
+  loyalty_card_image: ImageRaw | null
+  loyalty_card_logo: ImageRaw | null
   on_primary_color: string | null
   on_accent_color: string | null
   on_background_color: string | null
@@ -65,6 +82,7 @@ export type UiSettingsRaw = {
   cash_button_color: Color
   card_button_color: Color
   online_payment_button_color: Color
+  bottom_bar_elements: BottomBarElementRaw[]
 }
 
 export type BoxShadow = {
@@ -105,8 +123,8 @@ export class UiSetting implements BaseModel {
     background_color: string
   } | null
   backgrounImage: string | null
-  loyaltyCardImage: string | null
-  loyaltyCardLogo: string | null
+  loyaltyCardImage: Image | null
+  loyaltyCardLogo: Image | null
   onPrimaryColor: string | null
   onAccentColor: string | null
   onBackgroundColor: string | null
@@ -134,6 +152,7 @@ export class UiSetting implements BaseModel {
   cashButtonColor: Color
   cardButtonColor: Color
   onlinePaymentButtonColor: Color
+  bottomBarElements: BottomBarElementRaw[]
 
   constructor(raw: UiSettingsRaw) {
     this.id = raw.uuid
@@ -160,7 +179,11 @@ export class UiSetting implements BaseModel {
     this.logo = raw.logo
     this.backgrounImage = raw.background_image
     this.loyaltyCardImage = raw.loyalty_card_image
+      ? new Image(raw.loyalty_card_image)
+      : null
     this.loyaltyCardLogo = raw.loyalty_card_logo
+      ? new Image(raw.loyalty_card_logo)
+      : null
     this.onPrimaryColor = raw.on_primary_color
     this.onAccentColor = raw.on_accent_color
     this.onBackgroundColor = raw.on_background_color
@@ -193,6 +216,7 @@ export class UiSetting implements BaseModel {
     this.cashButtonColor = raw.cash_button_color
     this.cardButtonColor = raw.card_button_color
     this.onlinePaymentButtonColor = raw.online_payment_button_color
+    this.bottomBarElements = raw.bottom_bar_elements
   }
 
   addHash(v: string) {

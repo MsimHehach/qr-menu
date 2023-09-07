@@ -29,9 +29,8 @@ import { Company } from 'src/models/company/company'
 import CDialog from '../template/dialogs/CDialog.vue'
 import CIcon from '../template/helpers/CIcon.vue'
 import CompanyRow from 'src/pages/profile/CompanyRow.vue'
-import { watch } from 'vue'
 
-const props = defineProps<{
+defineProps<{
   modelValue: boolean
 }>()
 
@@ -44,11 +43,4 @@ const selectCompany = (v: Company) => {
   // if (v.salesPoints) salesPointRepo.item = v.salesPoints[0]
   emit('select', v)
 }
-
-watch(
-  () => props.modelValue,
-  () => {
-    console.log(props.modelValue)
-  }
-)
 </script>

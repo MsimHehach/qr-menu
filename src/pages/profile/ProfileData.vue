@@ -1,7 +1,11 @@
 <template>
-  <div class="row justify-between full-width">
-    <div class="col-5 text-on-background-color">
-      <div v-if="_item" class="column full-width gap-12">
+  <div class="row justify-between full-width relative-position">
+    <div class="col-md-7 col-lg-5 col-xs-12 text-on-background-color pt-xs-15">
+      <div
+        v-if="_item"
+        class="column full-width gap-sm-12 gap-xs-10"
+        :style="$q.screen.xs ? '' : 'max-width: 450px'"
+      >
         <CInput v-model="_item.firstName" height="40px" external-label="Имя" />
         <CInput
           v-model="_item.lastName"
@@ -40,6 +44,7 @@
             @click="updateProfileData()"
             :disabled="!isSaveAvailable"
             height="40px"
+            :loading="$customer.loadings.update"
             width="280px"
             >Сохранить</CButton
           >
@@ -53,9 +58,10 @@
       icon="fa-light fa-trash"
       height="40px"
       color="secondary-button-color"
+      :style="$q.screen.lt.md ? 'position: absolute; top: 0; right: 0' : ''"
       text-color="on-background-color"
-      >Удалить аккаунт</CButton
-    >
+      >{{ 'Удалить аккаунт' }}
+    </CButton>
   </div>
   <AcceptModal
     :model-value="acceptModal"
@@ -117,6 +123,7 @@ const updateProfileData = async () => {
       message: 'Данные профиля обновлены',
     })
   } catch {
+    customerRepo.loadings.update = false
     Notify.create({
       message: 'Ошибка при обновлении профиля',
       color: 'danger',

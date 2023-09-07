@@ -12,6 +12,7 @@ export type LinksSettingsRaw = {
   ios_build_version: number
   android_download_link: string
   ios_download_link: string
+  app_download_link: string
 }
 
 export class AppSettings implements BaseModel {

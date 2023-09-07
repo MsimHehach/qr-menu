@@ -1,22 +1,37 @@
 <template>
   <div v-if="$promotion.item" style="min-height: 450px" class="pt-20">
     <div class="c-container">
-      <div class="row full-width justify-between text-on-background-color">
-        <div class="column col-6">
-          <div class="header mb-15">{{ $promotion.item?.name }}</div>
-          <div class="bold mb-10">Описание</div>
-          <div class="body mb-15">
+      <div
+        :class="$q.screen.xs ? 'column reverse' : 'row '"
+        class="full-width justify-between text-on-background-color"
+      >
+        <div class="column col-sm-6 col-xs-12">
+          <div class="header mb-sm-15 mb-xs-10">
+            {{ $promotion.item?.name }}
+          </div>
+          <div style="font-size: 15px" class="mb-sm-15">
             {{ $promotion.item?.description || '-' }}
           </div>
         </div>
-        <div class="col-5">
+        <div class="col-5 mb-xs-10 mb-sm-0">
           <q-img
             v-if="$promotion.item.images.length < 2"
-            style="max-height: 300px"
+            style="max-height: 500px; height: 100%"
+            :style="$q.screen.xs ? 'height: 200px' : ''"
             class="rounded-15"
             fit="contain"
             :src="$promotion.item?.image?.thumbnail || $store.images.empty"
-          />
+          >
+            <template v-slot:error>
+              <span>
+                <q-img
+                  class="user-image"
+                  fit="cover"
+                  :height="$q.screen.xs ? '200px' : '320px'"
+                  :src="$store.images.empty"
+                ></q-img>
+              </span> </template
+          ></q-img>
           <SwiperContainer
             v-else
             no-navigation
@@ -26,20 +41,19 @@
             :items="$promotion.item.images"
           >
             <template v-slot:item="{ item }">
-              <!-- :style="`border-radius:${getBorderRadius}`" -->
               <q-img
                 class="border-radius"
                 :src="item.thumbnail || $store.images.empty"
                 fit="contain"
-                style="max-height: 300px; min-height: 300px"
+                style="max-height: 320px; min-height: 320px"
               >
                 <template v-slot:error>
                   <span>
                     <q-img
                       class="border-radius"
                       style="
-                        max-height: 300px !important;
-                        min-height: 300px !important;
+                        max-height: 320px !important;
+                        min-height: 320px !important;
                       "
                       :src="$store.images.empty"
                     ></q-img>
@@ -54,7 +68,7 @@
       <div class="header text-on-background-color c-container">Акции</div>
       <SwiperContainer
         use-bullets
-        :slides-per-view="4"
+        :slides-per-view="slidesPerView"
         class="swiper"
         :items="$promotion.items"
       >
@@ -69,7 +83,17 @@
               style="border-radius: 10px 10px 0 0"
               height="175px"
               fit="cover"
-            />
+            >
+              <template v-slot:error>
+                <span>
+                  <q-img
+                    class="border-radius"
+                    style="height: 175px"
+                    :src="$store.images.empty"
+                  ></q-img>
+                </span>
+              </template>
+            </q-img>
             <div class="px-5 py-7">
               <div class="ellipsis-2-lines">
                 {{ 'name' in item ? item.name : item.title }}
@@ -82,15 +106,22 @@
   </div>
 </template>
 <script lang="ts" setup>
+import { useQuasar } from 'quasar'
 import SwiperContainer from 'src/layouts/containers/SwiperContainer.vue'
 import { Promotions } from 'src/models/promotion/promotions'
 import { promotionsRepo } from 'src/models/promotion/promotionsRepo'
-import { onMounted } from 'vue'
+import { onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 const route = useRoute()
 
 const router = useRouter()
+
+const q = useQuasar()
+
+const slidesPerView = computed(() => {
+  return q.screen.xs ? 1.5 : q.screen.sm ? 2.6 : 4
+})
 
 onMounted(async () => {
   await promotionsRepo.retrieve(String(route.params.promotionId))

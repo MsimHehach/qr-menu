@@ -154,11 +154,55 @@ body.screen--sm {
     line-height: 140%;
   }
 
-  // .subtitle-text {
-  //   font-weight: 600;
-  //   font-size: 11px;
-  //   line-height: 15.4px;
-  // }
+  .caption-text {
+    font-weight: 400;
+    font-size: 11px;
+    line-height: 12.19px !important;
+  }
+
+  textarea::placeholder {
+    font-weight: 400;
+    font-size: 11px;
+    line-height: 12.19px;
+  }
+  .body {
+    font-weight: 400;
+    font-size: 13px;
+    line-height: 15.6px;
+  }
+  .secondary-text {
+    font-weight: 400;
+    font-size: 11px;
+    line-height: 13.41px;
+  }
+  .card-text {
+    font-weight: 400;
+    font-size: 10px;
+    line-height: 12.19px;
+  }
+  .mobile-catalog-text {
+    font-style: normal !important;
+    font-weight: 600 !important;
+    font-size: 10px !important;
+    line-height: 120% !important;
+    &.q-btn div {
+      @extend .mobile-catalog-text;
+    }
+  }
+}
+
+body.screen--xs {
+  .header {
+    font-weight: 600;
+    font-size: 20px;
+    line-height: 24px;
+  }
+
+  .header2 {
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 140%;
+  }
 
   .caption-text {
     font-weight: 400;

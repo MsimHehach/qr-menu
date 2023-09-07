@@ -12,6 +12,8 @@ export class Store {
   authModal = false
   profileModal = false
   cartDrawer = false
+  serviceSettingsModal = false
+  selectCompanyModal = false
   verticalScroll = 0
   offersTab = 'Новости'
   externalID = 'HooDoo'

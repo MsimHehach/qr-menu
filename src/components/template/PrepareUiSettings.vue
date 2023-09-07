@@ -68,6 +68,12 @@ const onCardButtonColor = ref<string>('#000')
 const onlineButtonColor = ref<string>('#fff')
 const onOnlineButtonColor = ref<string>('#000')
 
+const qrColor = ref<string>('#fff')
+const onQrColor = ref<string>('#000')
+
+const loyaltyCardBackgroundColor = ref<string>('#e9e9e9')
+const onLoyaltyCardBackgroundColor = ref<string>('#000')
+
 onMounted(() => {
   if (uiSettingsRepo.item) {
     borderRadius.value = `${uiSettingsRepo.item.borderRadius}px`
@@ -115,6 +121,10 @@ onMounted(() => {
     onCardButtonColor.value = `#${uiSettingsRepo.item.cardButtonColor.on_color}`
     onlineButtonColor.value = `#${uiSettingsRepo.item.onlinePaymentButtonColor.color}`
     onOnlineButtonColor.value = `#${uiSettingsRepo.item.onlinePaymentButtonColor.on_color}`
+    qrColor.value = `#${uiSettingsRepo.item.qrColor.color}`
+    onQrColor.value = `#${uiSettingsRepo.item.qrColor.on_color}`
+    loyaltyCardBackgroundColor.value = `#${uiSettingsRepo.item.loyaltyCardBackgroundColor.color}`
+    onLoyaltyCardBackgroundColor.value = `#${uiSettingsRepo.item.loyaltyCardBackgroundColor.on_color}`
   }
   document.body.style.setProperty('--primary', primaryColor.value)
   document.body.style.setProperty('--on-primary', onPrimaryColor.value)
@@ -230,6 +240,16 @@ onMounted(() => {
     '--on-online-button-color',
     onOnlineButtonColor.value
   )
+  document.body.style.setProperty('--qr-color', qrColor.value)
+  document.body.style.setProperty('--on-qr-color', onQrColor.value)
+  document.body.style.setProperty(
+    '--loyalty-card-background-color',
+    loyaltyCardBackgroundColor.value
+  )
+  document.body.style.setProperty(
+    '--on-loyalty-card-background-color',
+    onLoyaltyCardBackgroundColor.value
+  )
 })
 </script>
 
@@ -278,6 +298,10 @@ $colors: (
   'on-card-button-color': --on-card-button-color,
   'online-button-color': --online-button-color,
   'on-online-button-color': --on-online-button-color,
+  'qr-color': --qr-color,
+  'on-qr-color': --on-qr-color,
+  'loyalty-card-background-color': --loyalty-card-background-color,
+  'on-loyalty-card-background-color': --on-loyalty-card-background-color,
 );
 
 .border-radius {

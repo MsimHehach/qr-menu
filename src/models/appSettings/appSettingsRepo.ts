@@ -11,6 +11,7 @@ export class AppSettingsRepo extends BaseRepo<AppSettings> {
     const res: LinksSettingsRaw = await this.api.send({
       method: 'GET',
       action: 'fetch',
+      headers: { 'Company-Group': header },
     })
     this.linksData = res
     return res

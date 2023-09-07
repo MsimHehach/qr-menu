@@ -7,7 +7,7 @@
           <FooterDesktop />
         </div>
       </div>
-      <div class="footer-wrap pt-10 px-10 row" v-else>
+      <div class="footer-wrap py-10 px-10 row" v-else>
         <FooterMobile />
       </div>
     </div>

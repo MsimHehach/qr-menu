@@ -3,9 +3,9 @@
     class="full-width"
     style="gap: 20px"
     :style="`display: grid; grid-template-columns:  ${
-      products && $q.screen.lt.md
-        ? 'repeat(auto-fill, minmax(145px, 1fr));'
-        : `repeat(${columns}, 1fr)`
+      products && $q.screen.width < 415
+        ? 'repeat(auto-fill, minmax(175px, 1fr));'
+        : `repeat(${columns}, minmax(0, 1fr))`
     }`"
   >
     <div v-for="(item, index) in items" :key="index">
