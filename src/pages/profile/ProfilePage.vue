@@ -105,8 +105,9 @@ onMounted(() => {
     })
   }
   if (!authentication.user) void router.push({ name: 'home' })
-  if (companyGroupRepo.item && companyGroupRepo.item?.companies.length < 2)
+  if (companyGroupRepo.item && companyGroupRepo.item?.companies.length < 2) {
     companyRepo.companyForProfile = companyRepo.item
+  }
 })
 
 watch(

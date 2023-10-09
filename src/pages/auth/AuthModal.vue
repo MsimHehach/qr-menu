@@ -47,7 +47,7 @@
         v-if="currentStep === 1"
         input-class="header3 text-on-input-color input"
         height="50px"
-        class="mb-11"
+        class="pb-11 px-5"
         outlined
         mask="+7 (###) ###-##-##"
         unmasked-value
@@ -132,7 +132,7 @@ defineProps<{
 
 const openPolicy = () => {
   window.open(
-    `https://loyal.corex.studio/${String(route.params.companyGroup)}/policy`,
+    `https://loyalhub.ru/${String(route.params.companyGroup)}/policy`,
     '_blank'
   )
 }

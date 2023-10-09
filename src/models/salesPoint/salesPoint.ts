@@ -66,7 +66,7 @@ export type PaymentSettings = {
 }
 
 export type SalesPointRaw = {
-  uuid: string | undefined
+  uuid: string
   name?: string
   code: string
   settings: SalesPointSettings

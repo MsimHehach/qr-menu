@@ -1,7 +1,7 @@
 <template>
   <div v-if="!loader" class="px-5">
     <div id="inputResult">
-      <div class="row mb-4">
+      <div class="row mb-0">
         <div class="col">
           <h4>
             <strong
@@ -12,7 +12,7 @@
       </div>
       <div class="row mb-4">
         <div class="col">
-          <h5>1. Общие положения</h5>
+          <h5 class="mt-xs-0">1. Общие положения</h5>
           <div class="descr">
             Настоящая политика обработки персональных данных составлена
             в&nbsp;соответствии с&nbsp;требованиями Федерального закона
@@ -46,7 +46,7 @@
               <!-- <span
                 class="link mark owner-site-url-field"
                 data-scroll-to="#owner-site-url-field"
-                >https://loyal.corex.studio</span
+                >https://loyalhub.ru</span
               >. -->
             </div>
           </div>
@@ -74,7 +74,7 @@
               <span
                 class="link mark owner-site-url-field"
                 data-scroll-to="#owner-site-url-field"
-                >https://loyal.corex.studio</span
+                >https://loyalhub.ru</span
               >.
             </div>
             <div class="li">
@@ -115,7 +115,7 @@
               <span
                 class="link mark owner-site-url-field"
                 data-scroll-to="#owner-site-url-field"
-                >https://loyal.corex.studio</span
+                >https://loyalhub.ru</span
               >.
             </div>
             <div class="li">
@@ -133,7 +133,7 @@
               <span
                 class="link mark owner-site-url-field"
                 data-scroll-to="#owner-site-url-field"
-                >https://loyal.corex.studio</span
+                >https://loyalhub.ru</span
               >.
             </div>
             <div class="li">
@@ -362,84 +362,63 @@
       <div class="row mb-4">
         <div class="col">
           <h5>6. Цели обработки персональных данных</h5>
-          <div class="ol">
-            <div class="li" id="KHtjFy">
-              <table class="purpose-table">
-                <tbody>
-                  <tr>
-                    <th>Цель обработки</th>
-                    <td class="purpose-field">
-                      <span class="mark link"
-                        >предоставление доступа Пользователю к&nbsp;сервисам,
-                        информации и/или&nbsp;материалам, содержащимся
-                        на&nbsp;веб-сайте</span
-                      >
-                    </td>
-                  </tr>
-                  <tr>
-                    <th>Персональные данные</th>
-                    <td class="data-field">
-                      <ul>
-                        <li><span class="mark link">номера телефонов</span></li>
-                        <li>
-                          <span class="mark link"
-                            >год, месяц, дата и&nbsp;место рождения</span
-                          >
-                        </li>
-                      </ul>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th>Правовые основания</th>
-                    <td class="legal-field">
-                      <ul>
-                        <li>
-                          <span class="mark link"
-                            >уставные (учредительные) документы Оператора</span
-                          >
-                        </li>
-                      </ul>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th>Виды обработки персональных данных</th>
-                    <td class="types-field">
-                      <ul>
-                        <li>
-                          <span class="mark link"
-                            >Сбор, запись, систематизация, накопление, хранение,
-                            уничтожение и&nbsp;обезличивание персональных
-                            данных</span
-                          >
-                        </li>
-                      </ul>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+          <div class="column full-width gap-5">
+            <div
+              class="row full-width gap-5"
+              :class="{ 'no-wrap': !$q.screen.xs }"
+            >
+              <div class="bold col-xs-12 col-sm-4 col-md-2">Цель обработки</div>
+              <div>
+                <span class="mark link"
+                  >предоставление доступа Пользователю к&nbsp;сервисам,
+                  информации и/или&nbsp;материалам, содержащимся
+                  на&nbsp;веб-сайте</span
+                >
+              </div>
             </div>
-            <div id="purpose-table-template" style="display: none">
-              <div class="li">
-                <table class="purpose-table">
-                  <tbody>
-                    <tr>
-                      <th>Цель обработки</th>
-                      <td class="purpose-field"></td>
-                    </tr>
-                    <tr>
-                      <th>Персональные данные</th>
-                      <td class="data-field"></td>
-                    </tr>
-                    <tr>
-                      <th>Правовые основания</th>
-                      <td class="legal-field"></td>
-                    </tr>
-                    <tr>
-                      <th>Виды обработки персональных данных</th>
-                      <td class="types-field"></td>
-                    </tr>
-                  </tbody>
-                </table>
+            <div
+              class="row full-width gap-5"
+              :class="{ 'no-wrap': !$q.screen.xs }"
+            >
+              <div class="bold col-xs-12 col-sm-4 col-md-2">
+                Персональные данные
+              </div>
+              <div class="pl-8">
+                <ul>
+                  <li><span class="mark link">номера телефонов</span></li>
+                  <li>
+                    <span class="mark link"
+                      >год, месяц, дата и&nbsp;место рождения</span
+                    >
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div
+              class="row full-width gap-5"
+              :class="{ 'no-wrap': !$q.screen.xs }"
+            >
+              <div class="bold col-xs-12 col-sm-4 col-md-2">
+                Правовые основания
+              </div>
+              <div>
+                <span class="mark link"
+                  >уставные (учредительные) документы Оператора</span
+                >
+              </div>
+            </div>
+            <div
+              class="row full-width gap-5"
+              :class="{ 'no-wrap': !$q.screen.xs }"
+            >
+              <div class="bold col-xs-12 col-sm-4 col-md-2">
+                Виды обработки персональных данных
+              </div>
+              <div>
+                <span class="mark link"
+                  >Сбор, запись, систематизация, накопление, хранение,
+                  уничтожение и&nbsp;обезличивание персональных данных</span
+                >
               </div>
             </div>
           </div>
@@ -685,7 +664,7 @@
                 id="owner-privacy-url-value"
                 class="link mark owner-privacy-url-field"
                 data-scroll-to="#owner-privacy-url-field"
-                >https://loyal.corex.studio/policy</span
+                >https://loyalhub.ru/policy</span
               >.
             </div>
           </div>
@@ -698,16 +677,32 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { uiSettingsRepo } from 'src/models/uiSettings/uiSettingsRepo';
-import { onMounted, ref } from 'vue';
-import { useRoute } from 'vue-router';
+import { uiSettingsRepo } from 'src/models/uiSettings/uiSettingsRepo'
+import { onMounted, ref } from 'vue'
+import { useRoute } from 'vue-router'
 
-const route = useRoute();
-const loader = ref(false);
+const route = useRoute()
+const loader = ref(false)
 
 onMounted(async () => {
-  loader.value = true;
-  await uiSettingsRepo.fetchSettings(String(route.params.externalId));
-  loader.value = false;
-});
+  loader.value = true
+  await uiSettingsRepo.fetchSettings(String(route.params.externalId))
+  loader.value = false
+})
 </script>
+
+<style lang="scss" scoped>
+body.screen--xs {
+  h4 {
+    font-size: 26px !important;
+    line-height: 32px;
+  }
+}
+
+body.screen--xs {
+  h5 {
+    font-size: 20px !important;
+    line-height: 25px;
+  }
+}
+</style>

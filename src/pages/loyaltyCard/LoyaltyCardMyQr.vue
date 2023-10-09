@@ -1,5 +1,5 @@
 <template>
-  <div class="pt-10 bg-background-color">
+  <div class="pt-10 bg-background-color text-on-background-color">
     <div
       class="border-radius bg-backing-color full-width py-10 column no-wrap gap-10 items-center"
       style="height: 300px"
@@ -10,6 +10,7 @@
       </div>
     </div>
     <div
+      v-if="authentication.user && authentication.user.categories.length > 1"
       class="row justify-between pa-10 full-width bg-backing-color border-radius mt-10"
     >
       <div class="column gap-3">

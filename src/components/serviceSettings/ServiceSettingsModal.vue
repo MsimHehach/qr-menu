@@ -164,6 +164,9 @@
                   : 'secondary-button-color'
               "
             /> -->
+              <div v-if="!availableCartTypes.length">
+                Нет доступных способов заказа
+              </div>
             </div>
           </div>
           <div
@@ -388,7 +391,7 @@
                   class=""
                   color="button-color"
                   text-color="on-button-color"
-                  width="280"
+                  :width="$q.screen.xs ? '200' : '280'"
                   height="50"
               /></template>
               <CButton
@@ -397,7 +400,7 @@
                 :label="currentTab === CartType.BOOKING ? 'Далее' : 'Выбрать'"
                 :disabled="disableFurtherButton"
                 class=""
-                width="280"
+                :width="$q.screen.xs ? '200' : '280'"
                 color="button-color"
                 text-color="on-button-color"
                 height="50"

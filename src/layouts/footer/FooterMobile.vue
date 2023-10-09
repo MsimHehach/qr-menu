@@ -184,9 +184,7 @@ const navigation = computed(() => {
       label: 'Политика конфиденциальности',
       click: () => {
         openLink(
-          `https://loyal.corex.studio/${String(
-            route.params.companyGroup
-          )}/policy`
+          `https://loyalhub.ru/${String(route.params.companyGroup)}/policy`
         )
       },
     },
@@ -194,7 +192,7 @@ const navigation = computed(() => {
       label: 'Пользовательское соглашение',
       click: () => {
         openLink(
-          `https://loyal.corex.studio/${String(
+          `https://loyalhub.ru/${String(
             route.params.companyGroup
           )}/terms_of_service`
         )

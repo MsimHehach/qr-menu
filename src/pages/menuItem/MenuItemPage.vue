@@ -37,7 +37,7 @@
           ? 'width: 100%; height: 350px'
           : $q.screen.sm
           ? 'width: 45%'
-          : 'width: 40%; min-height: 600px'
+          : 'width: 40%; min-height: 600px; max-height: 600px'
       }`"
       fit="contain"
       class="border-radius"
@@ -49,6 +49,7 @@
           <q-img
             :height="$q.screen.xs ? '350px' : ''"
             fit="cover"
+            class="border-radius"
             :src="$store.images.empty"
           ></q-img>
         </span>

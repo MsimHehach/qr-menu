@@ -103,9 +103,7 @@ watch(
   (v) => {
     if (!v) return
 
-    webSocket.value = new WebSocket(
-      `wss://loyal.corex.studio/ws/customers/${v}/`
-    )
+    webSocket.value = new WebSocket(`wss://loyalhub.ru/ws/customers/${v}/`)
 
     webSocket.value.onmessage = (event) => {
       handleMessage(event)

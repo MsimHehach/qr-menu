@@ -77,6 +77,7 @@ import { store } from 'src/models/store'
 import { companyGroupRepo } from 'src/models/companyGroup/companyGroupRepo'
 import { route } from 'quasar/wrappers'
 import CIcon from 'src/components/template/helpers/CIcon.vue'
+import { authentication } from 'src/models/authentication/authentication'
 
 const router = useRouter()
 
@@ -128,10 +129,32 @@ const buttons = computed(
         semanticLabel: 'cart',
         icon: 'fa-light fa-cart-shopping ',
         click: () => {
+          if (!authentication.user) {
+            store.authModal = true
+            return
+          }
           store.cartDrawer = !store.cartDrawer
         },
         textColor: () => {
           return store.cartDrawer ? 'primary' : 'on-bottom-menu-color'
+        },
+      },
+      {
+        label: 'О нас',
+        semanticLabel: 'company_profile',
+        icon: 'fa-light fa-building ',
+        click: () => {
+          closeDialogs()
+          if (!authentication.user) {
+            store.authModal = true
+            return
+          }
+          void router.push({
+            name: 'aboutUs',
+          })
+        },
+        textColor: () => {
+          return route.name === 'aboutUs' ? 'primary' : 'on-bottom-menu-color'
         },
       },
       {
@@ -140,6 +163,10 @@ const buttons = computed(
         semanticLabel: 'profile',
         click: () => {
           closeDialogs()
+          if (!authentication.user) {
+            store.authModal = true
+            return
+          }
           void router.push({
             name: 'profilePage',
           })
@@ -150,25 +177,15 @@ const buttons = computed(
             : 'on-bottom-menu-color'
         },
       },
-      {
-        label: 'О нас',
-        semanticLabel: 'company_profile',
-        icon: 'fa-light fa-building ',
-        click: () => {
-          closeDialogs()
-          void router.push({
-            name: 'aboutUs',
-          })
-        },
-        textColor: () => {
-          return route.name === 'aboutUs' ? 'primary' : 'on-bottom-menu-color'
-        },
-      },
     ]
   }
 )
 
 const openQrPage = () => {
+  if (!authentication.user) {
+    store.authModal = true
+    return
+  }
   void router.push({
     name: 'myQrPage',
   })
@@ -181,6 +198,10 @@ const closeDialogs = () => {
 }
 
 const openDialog = () => {
+  if (!authentication.user) {
+    store.authModal = true
+    return
+  }
   closeDialogs()
   if (!companyGroupRepo.item) return
   if (companyGroupRepo.item?.companies.length > 1) {
