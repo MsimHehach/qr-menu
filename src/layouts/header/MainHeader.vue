@@ -6,7 +6,12 @@
           class="col-sm-5 col-md-3 col-lg-2 col-xs-5 row cursor-pointer"
           @click="$router.push({ name: 'home' })"
         >
-          <img height="50" :src="$uiSettings.item?.logo?.thumbnail" />
+          <img
+            v-if="$uiSettings.item?.logo?.thumbnail"
+            height="50"
+            :src="$uiSettings.item?.logo?.thumbnail"
+          />
+          <div v-else class="header">Loyalhub</div>
         </div>
         <div class="col-grow row gap-15 body">
           <ServiceSettingsBlock v-if="authentication.user" />

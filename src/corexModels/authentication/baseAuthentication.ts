@@ -1,3 +1,4 @@
+import { companyGroupRepo } from './../../models/companyGroup/companyGroupRepo'
 import { authentication } from './../../models/authentication/authentication'
 import { companyRepo } from './../../models/company/companyRepo'
 import { Customer, CustomerRaw } from './../../models/customer/customer'
@@ -43,10 +44,15 @@ export class BaseAuthentication {
     if (!this.tokens.accessIsValid) throw Error('Access token is not valid.')
     authentication.loading = true
     this.user = await this._loadUser()
-    if (this.user.companyGroup.companies.length > 1) {
-    } else {
-      companyRepo.item = this.user.companyGroup.companies[0]
-      companyRepo.cartCompany = this.user.companyGroup.companies[0]
+    if (companyGroupRepo.item) {
+      if (
+        companyGroupRepo.item &&
+        companyGroupRepo.item?.companies.length > 1
+      ) {
+      } else {
+        companyRepo.item = companyGroupRepo.item.companies[0]
+        companyRepo.cartCompany = companyGroupRepo.item.companies[0]
+      }
     }
     authentication.loading = false
     return this.user
@@ -153,8 +159,6 @@ export class BaseAuthentication {
     Object.assign(api.defaults.headers, {
       [this.settings.companyGroupHeader.key]: v,
     })
-
-    // LocalStorage.set(this.settings.companyGroupHeader.key, v);
   }
 
   async validateTokens(): Promise<void> {

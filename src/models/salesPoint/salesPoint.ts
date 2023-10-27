@@ -1,4 +1,3 @@
-import { MenuRaw, Menu } from './../menu/menu'
 import { CompanyRaw, Company } from './../company/company'
 import moment from 'moment'
 import { BaseModel } from 'src/corexModels/apiModels/baseModel'
@@ -78,7 +77,7 @@ export type SalesPointRaw = {
     latitude: number | null
     longitude: number | null
   }
-  company: CompanyRaw
+  company: CompanyRaw | string | null
   company_group: string
   test_settings: SalesPointSettings
   test_payment_settings: PaymentSettings
@@ -86,10 +85,10 @@ export type SalesPointRaw = {
   visible: boolean
   created_at: string
   updated_at: string
-  menu: MenuRaw
+  menu: string | null
   price: number
   image: ImageRaw | null
-  images: ImageRaw[]
+  images?: ImageRaw[]
   contacts: Contact
   schedule: ScheduleRaw | null
   legal_entity?: string
@@ -108,7 +107,7 @@ export class SalesPoint implements BaseModel {
     latitude: number | null
     longitude: number | null
   }
-  company: Company
+  company: Company | string | null
   companyGroup: string
   testSettings: SalesPointSettings
   testPaymentSettings: PaymentSettings
@@ -116,7 +115,7 @@ export class SalesPoint implements BaseModel {
   visible: boolean
   createdAt: string
   updatedAt: string
-  menu: Menu
+  menu: string | null
   price: number
   image: Image | null
   images: Image[]
@@ -134,7 +133,12 @@ export class SalesPoint implements BaseModel {
     this.address = raw.address
     this.customAddress = raw.custom_address
     this.coords = raw.coords
-    this.company = new Company(raw.company)
+    this.company =
+      typeof raw.company === 'string'
+        ? raw.company
+        : raw.company
+        ? new Company(raw.company)
+        : null
     this.companyGroup = raw.company_group
     this.testSettings = raw.test_settings
     this.testPaymentSettings = raw.test_payment_settings
@@ -144,10 +148,10 @@ export class SalesPoint implements BaseModel {
       .utc(raw.created_at, 'YYYY-MM-DD HH:mm:ss')
       .format('DD.MM.YYYY')
     this.updatedAt = raw.updated_at
-    this.menu = new Menu(raw.menu)
+    this.menu = raw.menu
     this.price = raw.price
     this.image = raw.image ? new Image(raw.image) : null
-    this.images = raw.images.map((v) => new Image(v))
+    this.images = raw.images ? raw.images.map((v) => new Image(v)) : []
     this.contacts = raw.contacts
     this.schedule = raw.schedule
       ? new Schedule(raw.schedule)
@@ -175,7 +179,7 @@ export class SalesPoint implements BaseModel {
       // address: this.address,
       custom_address: this.customAddress,
       // coords: this.coords,
-      company: this.company.toJson(),
+      company: this.company,
       company_group: this.companyGroup,
       // test_settings: this.test_settings,
       // test_payment_settings: this.test_payment_settings,

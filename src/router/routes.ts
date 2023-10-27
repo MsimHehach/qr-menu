@@ -109,12 +109,14 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/:externalId/terms_of_service',
-    name: 'termsOfServicePage',
+    name: 'YermsOfServicePage',
     component: () => import('pages/TermsOfServicePage.vue'),
   },
-
-  // Always leave this as last one,
-  // but you can also remove it
+  {
+    path: '/:externalId/terms_of_use',
+    name: 'termsOfServicePage',
+    component: () => import('pages/TermsOfUse.vue'),
+  },
   {
     path: '/:catchAll(.*)*',
     component: () => import('src/pages/404page.vue'),

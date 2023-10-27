@@ -1,3 +1,4 @@
+import { companyGroupRepo } from './companyGroup/companyGroupRepo'
 import { companyRepo } from './company/companyRepo'
 import { menuRepo } from './menu/menuRepo'
 import { salesPointRepo } from './salesPoint/salesPointRepo'
@@ -5,6 +6,7 @@ import { SalesPoint } from './salesPoint/salesPoint'
 import { authentication } from './authentication/authentication'
 import { LocalStorage } from 'quasar'
 import { reactive } from 'vue'
+
 export class Store {
   salesPoint = 'd253cd53-044b-468d-8881-232f43715f5e'
   companyGroup = 'corex_demo'
@@ -48,6 +50,7 @@ export class Store {
 
   async loadCatalog(point: SalesPoint | string) {
     let salesPoint: SalesPoint | null = null
+
     if (typeof point === 'string') {
       const res = await salesPointRepo.retrieve(point)
       salesPoint = res
@@ -56,8 +59,8 @@ export class Store {
       salesPoint = res
     }
     if (salesPoint) {
-      const foundCompany = authentication.user?.companyGroup.companies.find(
-        (v) => v.id === salesPoint?.company.id
+      const foundCompany = companyGroupRepo.item?.companies.find(
+        (v) => v.id === salesPoint?.company
       )
       if (foundCompany) companyRepo.item = foundCompany
       // await menuRepo.retrieve(salesPoint.menu.id)

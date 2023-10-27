@@ -336,7 +336,11 @@ const currentSize = computed(() => {
 const addToCart = async () => {
   if (!cartRepo.item && salesPointRepo.item) {
     // companyRepo.item = salesPointRepo.item.company
-    await companyRepo.retrieve(String(salesPointRepo.item.company.id))
+    await companyRepo.retrieve(
+      typeof salesPointRepo.item.company === 'string'
+        ? salesPointRepo.item.company
+        : salesPointRepo.item.company?.id || ''
+    )
     cartConfigureModal.value = true
   } else if (cartRepo.item && currentSize.value) {
     try {

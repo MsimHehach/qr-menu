@@ -1,7 +1,6 @@
 import { ImageRaw } from './../image/image'
 import moment from 'moment'
 import { BaseModel } from 'src/corexModels/apiModels/baseModel'
-import { CompanyGroup, CompanyGroupRaw } from '../companyGroup/companyGroup'
 
 export enum SexType {
   MALE = 'male',
@@ -72,7 +71,7 @@ export type CustomerRaw = {
   email: string | null
   receive_promo: boolean
   username: string | null
-  company_group: CompanyGroupRaw
+  company_group: string | null
   referrer: string | null
   external_id: string | null
   loyalty_cards: LoyaltyCardRaw[]
@@ -105,7 +104,7 @@ export class Customer implements BaseModel {
   email: string | null
   receivePromo: boolean
   username: string | null
-  companyGroup: CompanyGroup
+  companyGroup: string | null
   referrer: string | null
   externalId: string | null
   loyaltyCards: LoyaltyCardRaw[]
@@ -139,7 +138,7 @@ export class Customer implements BaseModel {
     this.email = raw.email
     this.receivePromo = raw.receive_promo
     this.username = raw.username
-    this.companyGroup = new CompanyGroup(raw.company_group)
+    this.companyGroup = raw.company_group
     this.referrer = raw.referrer
     this.externalId = raw.external_id
     this.loyaltyCards = raw.loyalty_cards

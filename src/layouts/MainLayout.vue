@@ -30,6 +30,7 @@
         }"
         style="padding-bottom: 50px"
       >
+        <!-- {{ $route.name }} -->
         <router-view />
         <CartDrawer />
       </q-page-container>
@@ -168,6 +169,7 @@ onMounted(async () => {
     void promotionsRepo.list({
       company_group: companyGroupRepo.item?.id,
     })
+
   void store.loadCatalog(
     cartRepo.item
       ? cartRepo.item?.salesPoint

@@ -56,15 +56,26 @@
 
       <div>
         <h6 class="my-0 bold">Документы:</h6>
-        <div class="row no-wrap items-center gap-5 mt-10">
+        <div class="col no-wrap items-center gap-5 mt-10">
           <!-- <q-icon size="26px" name="fal fa-file-powerpoint" /> -->
-          <a
-            :href="linkToPolicy"
-            target="_blank"
-            class="my-0"
-            style="font-size: 14px"
-            >Политика в отношении обработки персональных данных</a
-          >
+          <div>
+            <a
+              :href="linkToPolicy"
+              target="_blank"
+              class="my-0"
+              style="font-size: 14px"
+              >Политика в отношении обработки персональных данных</a
+            >
+          </div>
+          <div class="mt-8">
+            <a
+              :href="linkToTermsOfUse"
+              target="_blank"
+              class="mt-8"
+              style="font-size: 14px"
+              >Пользовательское соглашение</a
+            >
+          </div>
         </div>
       </div>
 
@@ -180,6 +191,12 @@ const linkToPolicy = computed(() => {
   return `https://${window.location.host}/${String(
     route.params.externalId
   )}/policy`
+})
+
+const linkToTermsOfUse = computed(() => {
+  return `https://${window.location.host}/${String(
+    route.params.externalId
+  )}/terms_of_use`
 })
 
 // const isBest2Pay = computed(() => {
