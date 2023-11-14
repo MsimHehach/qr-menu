@@ -105,7 +105,7 @@
         <div style="text-align: center; font-weight: 500">{{ el.label }}</div>
         <div
           style="width: fit-content"
-          class="bg-white-opacity border-radius px-6 py-5"
+          class="bg-white-opacity box-shadow border-radius px-6 py-5"
         >
           <CIcon size="18px" :name="el.icon" color="primary" />
         </div>

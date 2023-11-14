@@ -40,7 +40,7 @@
     </CExpansionItem>
     <q-separator color="divider-color" />
   </q-list>
-  <div class="row gap-sm-5 gap-xs-5 justify-between full-width">
+  <div class="row gap-sm-5 gap-xs-5 justify-between full-width pb-12">
     <div
       v-if="
         $appSettings.linksData?.android_download_link ||

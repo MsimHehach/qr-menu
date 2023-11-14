@@ -12,7 +12,7 @@
     :icon-color="iconColor"
     :icon-class="iconClass"
     @icon-click="$emit('iconClick')"
-    @update:modelValue="$emit('update:modelValue', $event)"
+    @update:modelValue="$emit('update:modelValue', $event), (updated = true)"
     :rules="[() => validateAddress(currentFullAddress)]"
   >
     <q-menu
@@ -65,13 +65,14 @@ const props = withDefaults(
 )
 
 const currentAddress = ref('')
+const updated = ref(false)
 const currentFullAddress = ref<Address | null>(null)
 
 onMounted(() => {
   currentAddress.value = props.address
-  if (props.address.length) {
-    void loadAddresses(props.address)
-  }
+  // if (props.address.length) {
+  // void loadAddresses(props.address)
+  // }
 })
 
 const propsAddress = computed(() => props.address)
@@ -90,6 +91,7 @@ const loadAddresses = async (address: string) => {
   }
   loading.value = false
 }
+
 const selectAddress = (val: Address) => {
   currentFullAddress.value = val
   emit('update', val)
@@ -112,6 +114,7 @@ watch(propsAddress, (val) => {
 })
 
 const validateAddress = (val: Address | null) => {
+  if (!val && props.address && !updated.value) return true
   if (val && val.address) {
     if (val.street) {
       if (val.house) {

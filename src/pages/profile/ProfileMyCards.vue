@@ -47,7 +47,7 @@
   <div
     v-else
     :style="$q.screen.xs ? '' : 'max-width: 416px;'"
-    style="height: 224px"
+    style="min-height: 224px"
     class="bg-backing-color text-on-backing-color border-radius box-shadow column no-wrap justify-center items-center gap-10"
   >
     <CIcon

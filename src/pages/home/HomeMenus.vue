@@ -9,7 +9,12 @@
           class="border-radius"
           fit="contain"
           style="width: 75px; height: 75px"
-          :src="$menu.item?.company.image?.thumbnail || $store.images.empty"
+          :src="
+            typeof $salesPoint.item?.company === 'string'
+              ? $menu.item?.company.image?.thumbnail || $store.images.empty
+              : $salesPoint.item?.company?.image?.thumbnail ||
+                $store.images.empty
+          "
         >
           <template v-slot:error>
             <span>
@@ -22,7 +27,11 @@
         ></q-img>
         <div class="header">
           <template v-if="!$salesPoint.menuLoading">
-            {{ $menu.item?.company.name }}
+            {{
+              typeof $salesPoint.item?.company === 'string'
+                ? $menu.item?.company.name
+                : $salesPoint.item?.company?.name
+            }}
           </template>
           <q-skeleton v-else width="150px" height="30px" />
         </div>
@@ -61,7 +70,7 @@
     </div> -->
     <template v-if="!$salesPoint.menuLoading && $menu.item?.groups">
       <div
-        v-for="(el, index) in $menu.item.groups"
+        v-for="(el, index) in $menu.item.groups.filter((v) => v.items.length)"
         :key="index"
         class="full-width pt-18"
         :id="el.id"

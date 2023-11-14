@@ -1,7 +1,7 @@
 <template>
   <div>
     <div
-      class="row full-width items-center justify-between border-radius px-7 relative-position"
+      class="row no-wrap full-width items-center justify-between border-radius px-7 relative-position"
       style="height: 174px"
       :class="{
         'bg-loyalty-card-background-color': !$uiSettings.item?.loyaltyCardImage,
@@ -15,9 +15,10 @@
         style="z-index: 0; width: 100%; height: 100%; top: 0; left: 0"
       >
       </q-img>
-      <div class="col-6" style="max-height: 84px">
+      <div class="col-6" style="max-height: 130px">
         <q-img
-          height="84"
+          style="max-height: 130px; height: 100%"
+          fit="contain"
           :src="$uiSettings.item?.loyaltyCardLogo?.thumbnail"
         />
       </div>

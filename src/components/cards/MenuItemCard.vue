@@ -30,9 +30,7 @@
       </div>
 
       <div class="header3 text-on-product-tile-color">
-        {{
-          typeof item.product !== 'string' ? item.sizes[0].price || '0' : '-'
-        }}
+        {{ item.sizes[0].price }}
         ₽
       </div>
     </div>

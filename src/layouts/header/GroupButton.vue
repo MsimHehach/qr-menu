@@ -11,13 +11,11 @@
       additional ? '' : 'margin-left: -10px',
     ]"
     style="max-width: 150px"
-    :class="[
-      item.id === $menuGroup.elementInViewport && isHomePage && !additional
-        ? 'bg-button-color text-on-button-color'
-        : 'text-on-background-color',
-      additional ? 'py-2 px-3' : 'py-4 px-5',
-    ]"
+    :class="[additional ? 'py-2 px-3' : 'py-4 px-5']"
   >
+    <!-- item.id === $menuGroup.elementInViewport && isHomePage && !additional
+        ? 'bg-button-color text-on-button-color'
+        : 'text-on-background-color', -->
     {{ item.name }}
   </div>
 </template>
@@ -26,6 +24,7 @@ import { MenuGroup } from 'src/models/menu/menuGroups/menuGroup'
 import { ref, onMounted, computed } from 'vue'
 import { menuGroupRepo } from 'src/models/menu/menuGroups/menuGroupRepo'
 import { useRoute, useRouter } from 'vue-router'
+
 const groupElement = ref<Element | null>(null)
 
 const route = useRoute()

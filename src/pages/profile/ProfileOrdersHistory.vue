@@ -29,7 +29,7 @@
       <div
         v-else
         :style="$q.screen.xs ? '' : 'width: 416px'"
-        style="height: 200px"
+        style="min-height: 200px"
         class="bg-backing-color text-on-backing-color border-radius box-shadow column justify-center items-center gap-10"
       >
         <CIcon
@@ -49,13 +49,13 @@
       :last-page="$order.pagination.last_page"
     ></Pagination>
   </div>
-  <div
-    v-if="$order.loadings.list"
+  <!-- <div
+    
     style="height: 100vh"
     class="absolute-full flex items-center justify-center"
   >
     <q-spinner-puff color="primary" size="10%" />
-  </div>
+  </div> -->
 </template>
 <script lang="ts" setup>
 import { orderRepo } from 'src/models/order/orderRepo'

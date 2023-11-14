@@ -79,6 +79,14 @@
   }
 }
 
+.c-btn .q-focus-helper {
+  display: none !important;
+}
+
+.mx-datepicker-popup {
+  z-index: 99999999999999;
+}
+
 .c-container {
   max-width: 1420px;
   width: 100%;

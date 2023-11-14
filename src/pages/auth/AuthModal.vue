@@ -61,7 +61,7 @@
           width="200px"
           style="overflow-x: hidden"
           :class="data.sms.length ? 'center-content' : ''"
-          class="mb-11 sms-field"
+          class="pb-11 px-10 sms-field"
           standout
           mask="####"
         />

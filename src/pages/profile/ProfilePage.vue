@@ -58,6 +58,17 @@
         <router-view />
       </div>
     </div>
+
+    <q-spinner-puff
+      v-if="
+        $order.loadings.list ||
+        $deliveryAddress.loadings.list ||
+        $paymentCard.loadings.list
+      "
+      style="position: fixed; top: 44%; left: 43%; z-index: 9999"
+      color="primary"
+      size="12%"
+    />
   </div>
 </template>
 <script lang="ts" setup>
@@ -99,11 +110,11 @@ const profileBreadcrumbClickHandler = () => {
 }
 
 onMounted(() => {
-  if (q.screen.gt.xs) {
-    router.replace({
-      name: 'profileData',
-    })
-  }
+  // if (q.screen.gt.xs) {
+  //   router.replace({
+  //     name: 'profileData',
+  //   })
+  // }
   if (!authentication.user) void router.push({ name: 'home' })
   if (companyGroupRepo.item && companyGroupRepo.item?.companies.length < 2) {
     companyRepo.companyForProfile = companyRepo.item

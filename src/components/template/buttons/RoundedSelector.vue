@@ -1,7 +1,13 @@
 <template>
   <div
     :class="modelValue ? 'bg-primary' : 'unselected'"
-    style="height: 29px; width: 29px; border-radius: 50%"
+    style="
+      min-height: 29px;
+      max-width: 29px;
+      max-height: 29px;
+      min-width: 29px;
+      border-radius: 50%;
+    "
     class="row justify-center items-center"
     :style="modelValue ? '' : 'border: 1px on-background-color solid'"
   >

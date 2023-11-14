@@ -16,9 +16,7 @@
         <div
           class="justify-center items-start row"
           style="width: 50px; height: 34px"
-          v-for="(item, index) in awailableButtons.filter(
-            (v, index) => index < 2
-          )"
+          v-for="(item, index) in buttons.filter((v, index) => index < 2)"
           :key="index"
         >
           <CButton
@@ -42,9 +40,7 @@
         <div
           class="justify-center items-start row"
           style="width: 50px; height: 34px"
-          v-for="(item, index) in awailableButtons.filter(
-            (v, index) => index > 1
-          )"
+          v-for="(item, index) in buttons.filter((v, index) => index > 1)"
           :key="index"
         >
           <CButton
@@ -52,7 +48,6 @@
             icon-no-gutters
             content-column
             text-button
-            :label="item.label"
             @click.capture="item.click ? item.click() : undefined"
             :text-color="item.textColor()"
             icon-size="23px"
@@ -60,7 +55,17 @@
             height="34px"
             color="transparent"
             hover-text-color="primary"
-          />
+          >
+            <q-badge
+              v-if="item.useChip"
+              style="font-size: 10px"
+              color="primary"
+              text-color="on-primary"
+              class="mt-1"
+              >{{ item.label }}</q-badge
+            >
+            <template v-else>{{ item.label }}</template>
+          </CButton>
         </div>
       </div>
     </div>
@@ -78,28 +83,38 @@ import { companyGroupRepo } from 'src/models/companyGroup/companyGroupRepo'
 import { route } from 'quasar/wrappers'
 import CIcon from 'src/components/template/helpers/CIcon.vue'
 import { authentication } from 'src/models/authentication/authentication'
+import { cartRepo } from 'src/models/carts/cartRepo'
 
 const router = useRouter()
 
-const awailableButtons = computed(() => {
-  return buttons.value.filter((v) =>
-    uiSettingsRepo.item?.bottomBarElements
-      .map((el) => el.semantic_label)
-      .includes(v.semanticLabel)
-  )
-})
+// const awailableButtons = computed(() => {
+//   return buttons.value.filter((v) =>
+//     uiSettingsRepo.item?.bottomBarElements
+//       .map((el) => el.semantic_label)
+//       .includes(v.semanticLabel)
+//   )
+// })
 
 const buttons = computed(
   (): {
     label: string
     semanticLabel: BottomBarElementType
     icon: string
+    useChip?: boolean
     click: () => void
     textColor: () => string
   }[] => {
-    return [
-      {
-        label: 'Главная',
+    let result: {
+      label: string
+      semanticLabel: BottomBarElementType
+      icon: string
+      useChip?: boolean
+      click: () => void
+      textColor: () => string
+    }[] = []
+    if (getElement('home')) {
+      result.push({
+        label: getElement('home')?.title || 'Главная',
         semanticLabel: 'home',
         icon: 'fa-light fa-house',
         click: () => {
@@ -109,9 +124,11 @@ const buttons = computed(
         textColor: () => {
           return route.name === 'home' ? 'primary' : 'on-bottom-menu-color'
         },
-      },
-      {
-        label: 'Заказать',
+      })
+    }
+    if (getElement('arrange')) {
+      result.push({
+        label: getElement('arrange')?.title || 'Заказать',
         semanticLabel: 'arrange',
         icon: 'fa-light fa-store ',
         click: () => {
@@ -123,10 +140,15 @@ const buttons = computed(
             ? 'primary'
             : 'on-bottom-menu-color'
         },
-      },
-      {
-        label: 'Корзина',
+      })
+    }
+    if (getElement('cart')) {
+      result.push({
+        label: !!cartRepo.item?.discountedTotalSum
+          ? `${cartRepo.item.discountedTotalSum} руб`
+          : getElement('cart')?.title || 'Корзина',
         semanticLabel: 'cart',
+        useChip: !!cartRepo.item?.discountedSum,
         icon: 'fa-light fa-cart-shopping ',
         click: () => {
           if (!authentication.user) {
@@ -138,9 +160,11 @@ const buttons = computed(
         textColor: () => {
           return store.cartDrawer ? 'primary' : 'on-bottom-menu-color'
         },
-      },
-      {
-        label: 'О нас',
+      })
+    }
+    if (getElement('company_profile')) {
+      result.push({
+        label: getElement('company_profile')?.title || 'О нас',
         semanticLabel: 'company_profile',
         icon: 'fa-light fa-building ',
         click: () => {
@@ -156,9 +180,11 @@ const buttons = computed(
         textColor: () => {
           return route.name === 'aboutUs' ? 'primary' : 'on-bottom-menu-color'
         },
-      },
-      {
-        label: 'Профиль',
+      })
+    }
+    if (getElement('profile')) {
+      result.push({
+        label: getElement('profile')?.title || 'Профиль',
         icon: 'fa-light fa-user',
         semanticLabel: 'profile',
         click: () => {
@@ -176,10 +202,17 @@ const buttons = computed(
             ? 'primary'
             : 'on-bottom-menu-color'
         },
-      },
-    ]
+      })
+    }
+    return result
   }
 )
+
+const getElement = (semanticLabel: BottomBarElementType) => {
+  return uiSettingsRepo.item?.bottomBarElements.find(
+    (el) => el.semantic_label === semanticLabel
+  )
+}
 
 const openQrPage = () => {
   if (!authentication.user) {

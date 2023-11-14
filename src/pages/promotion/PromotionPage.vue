@@ -108,6 +108,7 @@
 <script lang="ts" setup>
 import { useQuasar } from 'quasar'
 import SwiperContainer from 'src/layouts/containers/SwiperContainer.vue'
+import { companyGroupRepo } from 'src/models/companyGroup/companyGroupRepo'
 import { Promotions } from 'src/models/promotion/promotions'
 import { promotionsRepo } from 'src/models/promotion/promotionsRepo'
 import { onMounted, computed } from 'vue'
@@ -125,7 +126,11 @@ const slidesPerView = computed(() => {
 
 onMounted(async () => {
   await promotionsRepo.retrieve(String(route.params.promotionId))
-  if (!promotionsRepo.items.length) await promotionsRepo.list()
+  if (!promotionsRepo.items.length)
+    await promotionsRepo.list({
+      company_group: companyGroupRepo.item?.id,
+      active: true,
+    })
 })
 
 const goToItem = (item: Promotions) => {

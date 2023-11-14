@@ -178,7 +178,7 @@
           class="body text-primary"
         >
           <template v-if="!$menuItem.loadings.retrieve">
-            {{ currentSize?.characteristics.weight }} г
+            {{ currentSize?.characteristics.weight.toFixed(2) }} г
           </template>
           <q-skeleton v-else width="100px" />
         </div>
@@ -200,7 +200,7 @@
         </div>
 
         <div
-          class="row items-center gap-sm-15 gap-xs-8"
+          class="row items-center gap-sm-15 gap-xs-10"
           :class="[
             { 'mt-15': currentSize?.modifierGroups?.length },
             { 'justify-between': $q.screen.xs },
@@ -251,6 +251,8 @@ import ServiceSettingsModal from 'src/components/serviceSettings/ServiceSettings
 import { companyRepo } from 'src/models/company/companyRepo'
 import { salesPointRepo } from 'src/models/salesPoint/salesPointRepo'
 import { menuRepo } from 'src/models/menu/menuRepo'
+import { authentication } from 'src/models/authentication/authentication'
+import { store } from 'src/models/store'
 
 const route = useRoute()
 
@@ -334,6 +336,10 @@ const currentSize = computed(() => {
 // }
 
 const addToCart = async () => {
+  if (!authentication.user) {
+    store.authModal = true
+    return
+  }
   if (!cartRepo.item && salesPointRepo.item) {
     // companyRepo.item = salesPointRepo.item.company
     await companyRepo.retrieve(

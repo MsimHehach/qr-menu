@@ -60,15 +60,15 @@ export class Store {
     }
     if (salesPoint) {
       const foundCompany = companyGroupRepo.item?.companies.find(
-        (v) => v.id === salesPoint?.company
+        (v) =>
+          v.id ===
+          (typeof salesPoint?.company === 'string'
+            ? salesPoint.company
+            : salesPoint?.company?.id)
       )
-      if (foundCompany) companyRepo.item = foundCompany
-      // await menuRepo.retrieve(salesPoint.menu.id)
-      menuRepo.item = await salesPointRepo.getMenu(salesPoint.id || '')
 
-      // await menuGroupRepo.list({
-      //   menu: menuRepo.item?.id,
-      // })
+      if (foundCompany) companyRepo.item = foundCompany
+      menuRepo.item = await salesPointRepo.getMenu(salesPoint.id || '')
     }
   }
 }

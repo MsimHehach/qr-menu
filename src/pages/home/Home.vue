@@ -1,6 +1,7 @@
 <template>
   <div>
     <div class="row no-wrap column pt-sm-20 pt-xs-10 text-on-background-color">
+      <HomeHugeSlider v-if="$companyGroup.item?.externalId === 'corex_demo'" />
       <HomeProfile v-if="$q.screen.xs" class="c-container mb-5" />
       <HomeQrCard v-if="$q.screen.xs" class="c-container mb-15" />
       <HomeBonuses
@@ -21,6 +22,7 @@ import { menuGroupRepo } from 'src/models/menu/menuGroups/menuGroupRepo'
 import { authentication } from 'src/models/authentication/authentication'
 import HomeProfile from './HomeProfile.vue'
 import HomeQrCard from './HomeQrCard.vue'
+import HomeHugeSlider from './HomeHugeSlider.vue'
 
 const showBonuses = computed(() => {
   return authentication.user?.wallets.filter((v) => v.type === 'bonus').length

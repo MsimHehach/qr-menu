@@ -103,8 +103,6 @@ import { News } from 'src/models/news/news'
 import { useRouter } from 'vue-router'
 import { uiSettingsRepo } from 'src/models/uiSettings/uiSettingsRepo'
 import CButton from 'src/components/template/buttons/CButton.vue'
-import { newsRepo } from 'src/models/news/newsRepo'
-import { promotionsRepo } from 'src/models/promotion/promotionsRepo'
 import { useQuasar } from 'quasar'
 
 const router = useRouter()
@@ -113,8 +111,8 @@ const q = useQuasar()
 
 const tabs = computed(() => {
   const result = []
-  if (newsRepo.items.length) result.push('Новости')
-  if (promotionsRepo.items.length) result.push('Акции')
+  result.push('Новости')
+  result.push('Акции')
   return result
 })
 

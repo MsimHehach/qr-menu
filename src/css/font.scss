@@ -13,19 +13,28 @@
   }
 }
 
+.big-bold {
+  font-weight: 600 !important;
+}
+
 .light {
   font-weight: 400 !important;
 }
 
 .header {
-  font-weight: 700;
+  font-weight: 500;
   font-size: 28px;
   line-height: 39.2px;
 }
 
+.huge {
+  font-size: 48px;
+  line-height: 60px;
+}
+
 .header2 {
   font-size: 22px;
-  font-weight: 700;
+  font-weight: 500;
   line-height: 26.4px;
 }
 
@@ -36,7 +45,7 @@
 }
 
 .subtitle-text {
-  font-weight: 600;
+  font-weight: 500;
   font-size: 16px;
   line-height: 22px;
 }
@@ -113,13 +122,18 @@ textarea::placeholder {
 
 body.screen--md {
   .header {
-    font-weight: 600;
+    font-weight: 500;
     font-size: 26px;
     line-height: 36.4px;
   }
 
+  .huge {
+    font-size: 40px;
+    line-height: 50px;
+  }
+
   .subtitle-text {
-    font-weight: 600;
+    font-weight: 500;
     font-size: 13px;
     line-height: 18.2px;
   }
@@ -143,13 +157,18 @@ body.screen--md {
 
 body.screen--sm {
   .header {
-    font-weight: 600;
+    font-weight: 500;
     font-size: 20px;
     line-height: 24px;
   }
 
+  .huge {
+    font-size: 38px;
+    line-height: 46px;
+  }
+
   .header2 {
-    font-weight: 600;
+    font-weight: 500;
     font-size: 18px;
     line-height: 140%;
   }
@@ -182,7 +201,7 @@ body.screen--sm {
   }
   .mobile-catalog-text {
     font-style: normal !important;
-    font-weight: 600 !important;
+    font-weight: 500 !important;
     font-size: 10px !important;
     line-height: 120% !important;
     &.q-btn div {
@@ -193,13 +212,18 @@ body.screen--sm {
 
 body.screen--xs {
   .header {
-    font-weight: 600;
+    font-weight: 500;
     font-size: 20px;
     line-height: 24px;
   }
 
+  .huge {
+    font-size: 30px;
+    line-height: 38px;
+  }
+
   .header2 {
-    font-weight: 600;
+    font-weight: 500;
     font-size: 18px;
     line-height: 140%;
   }
@@ -232,7 +256,7 @@ body.screen--xs {
   }
   .mobile-catalog-text {
     font-style: normal !important;
-    font-weight: 600 !important;
+    font-weight: 500 !important;
     font-size: 10px !important;
     line-height: 120% !important;
     &.q-btn div {

@@ -47,6 +47,7 @@
 import AcceptModal from 'src/components/dialogs/AcceptModal.vue'
 import CIcon from 'src/components/template/helpers/CIcon.vue'
 import { authentication } from 'src/models/authentication/authentication'
+import { cartRepo } from 'src/models/carts/cartRepo'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -99,7 +100,9 @@ const tabClickHandler = async (routeName?: string) => {
 }
 
 const logOut = () => {
+  cartRepo.item = null
   void authentication.logout()
+
   void router.push({
     name: 'home',
   })

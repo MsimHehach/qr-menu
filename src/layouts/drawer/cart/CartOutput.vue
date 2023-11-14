@@ -88,7 +88,7 @@
       </CInput> -->
       <TimePicker
         label="Время доставки"
-        :options="kek"
+        :options="options"
         @update-time="setDeliveryTime($event)"
         height="50px"
         class="mt-10"
@@ -124,7 +124,7 @@
             <div class="row mt-3 full-width justify-end">
               <div
                 style="height: 30px; width: 30px"
-                class="bg-white-opacity row justify-center items-center border-radius"
+                class="bg-white-opacity box-shadow row justify-center items-center border-radius"
               >
                 <CIcon color="" :name="type.icon" />
               </div>
@@ -244,24 +244,18 @@ const resultRows = computed(() => {
   ]
 })
 
-const kek = computed(() => {
+const options = computed(() => {
   return currentDay.value === 'Сегодня'
     ? availableHours.value?.today.map((v) => {
         return {
-          start: moment
-            .utc(v.start, 'YYYY-MM-DD HH:mm')
-            .local()
-            .format('HH:mm'),
-          end: moment.utc(v.end, 'YYYY-MM-DD HH:mm').local().format('HH:mm'),
+          start: moment(v.start, 'YYYY-MM-DD HH:mm').format('HH:mm'),
+          end: moment(v.end, 'YYYY-MM-DD HH:mm').format('HH:mm'),
         }
       })
     : availableHours.value?.tomorrow.map((v) => {
         return {
-          start: moment
-            .utc(v.start, 'YYYY-MM-DD HH:mm')
-            .local()
-            .format('HH:mm'),
-          end: moment.utc(v.end, 'YYYY-MM-DD HH:mm').local().format('HH:mm'),
+          start: moment(v.start, 'YYYY-MM-DD HH:mm').format('HH:mm'),
+          end: moment(v.end, 'YYYY-MM-DD HH:mm').format('HH:mm'),
         }
       })
 })

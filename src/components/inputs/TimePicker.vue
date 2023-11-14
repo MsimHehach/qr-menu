@@ -1,11 +1,5 @@
 <template>
-  <CInput
-    :model-value="date"
-    @update:model-value="$emit('updateTime', $event)"
-    :external-label="label"
-    default
-    :height="height"
-  >
+  <CInput :model-value="date" :external-label="label" default :height="height">
     <q-menu
       v-model="menu"
       style="overflow: hidden"
@@ -13,7 +7,7 @@
     >
       <slot></slot>
       <div
-        class="row py-4 pl-15 pr-13 gap-15 justify-between no-wrap full-width items-center relative-position text-on-background-color"
+        class="row py-4 gap-5 justify-between no-wrap full-width items-center relative-position text-on-background-color"
       >
         <div class="hour-highlighter"></div>
         <div class="minutes-highlighter"></div>
@@ -24,7 +18,7 @@
             overflow-y: scroll;
             overflow-x: hidden;
             height: 100px;
-            width: 50px;
+            width: 100px;
           "
           @mousewheel="hourScrollHandler"
           ref="hourScrollElement"
@@ -33,12 +27,12 @@
             v-for="(el, index) in hours"
             :hour-item="el"
             :key="index"
-            class="child full-width"
+            class="child full-width pl-16"
             style="z-index: 1"
             :style="`${
               el === -1 || el === 24 ? 'visibility: hidden' : ''
             }; opacity: ${isHourAvailable(el) ? 'unset' : '0.2'}`"
-            :class="currentHour === el ? 'header2' : 'header2 light'"
+            :class="currentHour === el ? 'header2 big-bold' : 'header2 light'"
           >
             {{ el }}
           </div>
@@ -50,7 +44,7 @@
             overflow: scroll;
             overflow-x: hidden;
             height: 100px;
-            width: 50px;
+            width: 100px;
           "
           ref="minutesScrollElement"
         >
@@ -58,8 +52,10 @@
             v-for="(el, index) in minutes"
             :key="index"
             :mins-item="el"
-            class="child full-width row justify-end"
-            :class="currentMinutes === el ? 'header2' : 'header2 light'"
+            class="child full-width row justify-end pr-14"
+            :class="
+              currentMinutes === el ? 'header2 big-bold' : 'header2 light'
+            "
             style="z-index: 1"
             :style="`${
               el === -10 || el === 60 ? 'visibility: hidden' : ''
@@ -114,10 +110,15 @@ watch(
   () => menu.value,
   (v) => {
     if (v) {
-      const hours = moment(props.date, 'DD.MM.YYYY HH:mm').format('HH')
-      const mins = moment(props.date, 'DD.MM.YYYY HH:mm').format('mm')
-      currentHour.value = Number(hours)
-      currentMinutes.value = Number(mins)
+      let hours = null
+      let mins = null
+
+      if (props.date) {
+        hours = moment(props.date, 'DD.MM.YYYY HH:mm').format('HH')
+        mins = moment(props.date, 'DD.MM.YYYY HH:mm').format('mm')
+      }
+      if (hours) currentHour.value = Number(hours)
+      if (mins) currentMinutes.value = Number(mins)
       setTimeout(() => {
         const hourElement = hourScrollElement.value?.querySelector(
           `[hour-item="${currentHour.value}"]`
@@ -286,7 +287,7 @@ const minutesScrollHandler = (event: any) => {
   width: 70px;
   height: 35px;
   border-radius: 0px 10px 10px 0;
-  background-color: var(--secondary-button-color);
+  background-color: var(--selector-color);
   position: absolute;
   left: 0px;
 }
@@ -295,7 +296,7 @@ const minutesScrollHandler = (event: any) => {
   width: 70px;
   height: 35px;
   border-radius: 10px 0 0 10px;
-  background-color: var(--secondary-button-color);
+  background-color: var(--selector-color);
   position: absolute;
   right: 0px;
 }

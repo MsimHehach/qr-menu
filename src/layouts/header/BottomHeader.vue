@@ -8,9 +8,9 @@
       class="row no-wrap c-container pt-5 pb-4 body items-center gap-10"
     >
       <div v-if="!$q.screen.xs" class="row gap-14 no-wrap items-center">
-        <template v-if="$menu.item?.groups && !$salesPoint.menuLoading">
+        <template v-if="categories && !$salesPoint.menuLoading">
           <div
-            v-for="(el, index) in $menu.item.groups.filter((_, ind) =>
+            v-for="(el, index) in categories.filter((_, ind) =>
               $q.screen.sm ? ind < 5 : ind < 8
             )"
             :key="index"
@@ -18,7 +18,7 @@
             <GroupButton :key="key" :item="el" />
           </div>
           <div
-            v-if="$menu.item.groups.length > 8"
+            v-if="categories.length > 8"
             class="row no-wrap cursor-pointer text-on-background-color"
           >
             Еще
@@ -28,7 +28,7 @@
               class="border-radius bg-background-color pa-5 column gap-2"
             >
               <div
-                v-for="(el, index) in $menu.item.groups.filter((_, ind) =>
+                v-for="(el, index) in categories.filter((_, ind) =>
                   $q.screen.sm ? ind >= 5 : ind >= 8
                 )"
                 :key="index"
@@ -76,16 +76,21 @@
 <script setup lang="ts">
 import CIcon from 'src/components/template/helpers/CIcon.vue'
 import CButton from 'src/components/template/buttons/CButton.vue'
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import GroupButton from './GroupButton.vue'
 import { useRoute } from 'vue-router'
 import { authentication } from 'src/models/authentication/authentication'
+import { menuRepo } from 'src/models/menu/menuRepo'
 
 const key = ref(0)
 
 const moreCategoriesMenu = ref(false)
 
 const route = useRoute()
+
+const categories = computed(() => {
+  return menuRepo.item?.groups?.filter((v) => v.items.length)
+})
 
 watch(
   () => route.name,

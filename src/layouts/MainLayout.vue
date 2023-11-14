@@ -20,7 +20,11 @@
         </div>
       </div>
       <q-page-container
-        :style="`min-height: calc(100vh - ${footerAndHeaderHeight}px);`"
+        :style="
+          $q.screen.lt.md
+            ? ''
+            : `min-height: calc(100vh - ${footerAndHeaderHeight}px);`
+        "
         :class="{
           'c-container':
             $route.name !== 'home' &&
@@ -30,7 +34,6 @@
         }"
         style="padding-bottom: 50px"
       >
-        <!-- {{ $route.name }} -->
         <router-view />
         <CartDrawer />
       </q-page-container>
@@ -61,7 +64,6 @@
 
 <script setup lang="ts">
 import MainHeader from './header/MainHeader.vue'
-import CFooter from 'src/layouts/footer/CFooter.vue'
 import { Screen, useQuasar } from 'quasar'
 import { onMounted, ref, watch, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -84,6 +86,7 @@ import ServiceSettingsModal from 'src/components/serviceSettings/ServiceSettings
 import SelectCompanyModal from 'src/components/dialogs/SelectCompanyModal.vue'
 import { Company } from 'src/models/company/company'
 import { companyRepo } from 'src/models/company/companyRepo'
+import CFooter from './footer/CFooter.vue'
 
 const webSocket = ref<WebSocket | null>(null)
 
@@ -154,7 +157,7 @@ onMounted(async () => {
 
   try {
     await authentication.validateTokens()
-    void authentication.me()
+    await authentication.me()
     await cartRepo.current()
   } catch {
     authentication.loading = false
@@ -164,10 +167,12 @@ onMounted(async () => {
   if (!newsRepo.items.length)
     void newsRepo.list({
       company_group: companyGroupRepo.item?.id,
+      active: true,
     })
   if (!promotionsRepo.items.length)
     void promotionsRepo.list({
       company_group: companyGroupRepo.item?.id,
+      active: true,
     })
 
   void store.loadCatalog(
