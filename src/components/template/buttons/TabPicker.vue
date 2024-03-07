@@ -1,26 +1,28 @@
 <template>
-  <div class="row gap-10">
+  <div class="row">
+    <div v-if="externalLabel" class="helper-text bold mb-2">
+      {{ externalLabel }}
+    </div>
+
     <div
-      :style="`max-width: ${width}`"
-      style="height: fit-content"
-      class="body box-shadow bg-selector-color border-radius row full-width no-wrap pa-2"
+      :style="`max-width: ${width}; height: ${height}`"
+      class="body bg-selector-color border-radius2 row full-width no-wrap pa-1"
     >
       <div
         v-for="tab in localTabs"
         :key="tab.label"
         @click="selectTabHandler(tab)"
-        :style="
+        :style="[
           selectedTab === tab.label
             ? 'transition: background-color 0.4s ease-out'
-            : 'transition: background-color 0.3s ease-out'
-        "
+            : 'transition: background-color 0.3s ease-out',
+        ]"
         :class="[
           selectedTab === tab.label
             ? 'bg-selector-active-color text-on-selector-active-color'
             : 'text-on-selector-color',
-          small ? 'py-4' : 'py-7',
         ]"
-        class="cursor-pointer border-radius col row justify-center rounded-10 secondary-text relative-position"
+        class="cursor-pointer border-radius2 col row items-center justify-center rounded-10 body relative-position bold"
       >
         {{ tab.label }}
         <slot name="append"></slot>
@@ -55,12 +57,14 @@ const props = withDefaults(
         }[]
     modelValue?: string
     routerMethod?: 'replace' | 'push'
-    small?: boolean
     width?: string
+    externalLabel?: string | null
+    height?: string
   }>(),
   {
     routerMethod: 'replace',
     width: '300px',
+    height: '40px',
   }
 )
 

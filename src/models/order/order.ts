@@ -7,16 +7,46 @@ import moment from 'moment'
 import { ImageRaw } from '../image/image'
 import { MenuModifierGroupRaw } from '../menu/menuModifierGroup/menuModifierGroup'
 
+export type PaymentObjectType = {
+  label: string
+  type: PaymentType
+  class: string
+  icon: string
+}
+
+export enum OrderStatusType {
+  CREATED = 'created',
+  VALIDATED = 'validated',
+  ACCEPTED = 'accepted',
+  COOKING = 'cooking',
+  READY = 'ready',
+  ON_WAY = 'on_way',
+  DECLINED = 'declined',
+  CLOSED = 'closed',
+}
+
 export enum PaymentType {
   CASH = 'cash',
   CARD = 'card',
   ONLINE = 'online',
+  PAY_LATER = 'pay_later',
+  NET_MONET = 'net_monet',
+}
+
+export enum PaymentStatusType {
+  NOT_PAID = 'not_paid',
+  FULL_PAID = 'full_paid',
+  PART_PAID = 'part_paid',
+  REFUND = 'refund',
+  WAITING = 'waiting',
 }
 
 export const paymentTypeNames = {
   [PaymentType.CASH]: 'Наличными',
-  [PaymentType.CARD]: 'Картой курьеру',
+  [PaymentType.CARD]: 'Картой',
   [PaymentType.ONLINE]: 'Онлайн',
+  [PaymentType.PAY_LATER]: 'Внести в счет',
+  [PaymentType.NET_MONET]: 'netmonet',
 }
 
 export const paymentTypes = Object.keys(paymentTypeNames).map((el) => {
@@ -130,6 +160,7 @@ export type OrderItemRaw = {
   price: number
   sum: number
   total_sum: number
+  discounted_total_sum?: number | null
   size: ItemSize
   modifiers: ModifiersRaw[]
   created_at: string
@@ -137,11 +168,11 @@ export type OrderItemRaw = {
 }
 
 export type OrderRaw = {
-  uuid: number | undefined
+  uuid: string | undefined
   sales_point: SalesPointRaw
   type: string
   customer: CustomerRaw
-  status: string
+  status: OrderStatusType
   external_status: string | null
   external_id: string | null
   payment_status: string
@@ -164,11 +195,11 @@ export type OrderRaw = {
 }
 
 export class Order implements BaseModel {
-  id: number | undefined
+  id: string | undefined
   salesPoint: SalesPoint
   type: string
   customer: Customer
-  status: string
+  status: OrderStatusType
   externalStatus: string | null
   externalId: string | null
   paymentStatus: string
@@ -183,7 +214,7 @@ export class Order implements BaseModel {
   createdAt: string | null
   updatedAt: string | null
   items?: OrderItemRaw[]
-  deliveryPrice?: number
+  deliveryPrice: number
   appliedBonuses: number
   receivedBonuses: number
   paymentUrl: string | null
@@ -213,35 +244,91 @@ export class Order implements BaseModel {
       .format('DD.MM.YYYY HH:mm')
     this.updatedAt = raw.updated_at
     this.items = raw.items
-    this.deliveryPrice = raw.delivery_price
+    this.deliveryPrice = raw.delivery_price || 0
     this.appliedBonuses = raw.applied_bonuses
     this.receivedBonuses = raw.received_bonuses
     this.paymentUrl = raw.payment_url
   }
 
   get getPaymentStatus() {
-    if (this.paymentStatus === 'not_paid') return 'Не оплачен'
-    else if (this.paymentStatus === 'full_paid') return 'Полностью оплачен'
-    else return 'Возвращен'
+    if (this.paymentStatus === PaymentStatusType.NOT_PAID)
+      return {
+        color: 'gray-light',
+        label: 'Не оплачен',
+        textColor: 'black',
+      }
+    if (this.paymentStatus === PaymentStatusType.FULL_PAID)
+      return {
+        color: 'green',
+        label: 'Оплачен',
+        textColor: 'white',
+      }
+    if (this.paymentStatus === PaymentStatusType.WAITING)
+      return {
+        color: 'yellow',
+        label: 'В ожидании',
+        textColor: 'black',
+      }
+    if (this.paymentStatus === PaymentStatusType.REFUND)
+      return {
+        color: 'red',
+        label: 'Возвращен',
+        textColor: 'white',
+      }
+    if (this.paymentStatus === PaymentStatusType.PART_PAID)
+      return {
+        color: 'primary',
+        label: 'Частично оплачен',
+        textColor: 'white',
+      }
+  }
+
+  get getPaymentType() {
+    const type = this.paymentType
+    if (type === PaymentType.ONLINE)
+      return {
+        label: 'Онлайн',
+        icon: 'fa-light fa-mobile',
+        color: 'success',
+      }
+    if (type === PaymentType.CARD)
+      return {
+        label: 'Картой курьеру',
+        icon: 'fa-light fa-credit-card',
+        color: 'primary',
+      }
+    if (type === PaymentType.CASH)
+      return {
+        label: 'Наличными',
+        icon: 'fa-light fa-coin',
+        color: 'accent2',
+      }
+    if (type === PaymentType.NET_MONET)
+      return {
+        label: 'net monet',
+        icon: 'fa-light fa-diagram-project',
+        color: 'danger',
+      }
+    if (type === PaymentType.PAY_LATER)
+      return {
+        label: 'Оплата позже',
+        icon: 'fa-light fa-timer',
+        color: 'gray-dark',
+      }
   }
 
   get orderStatus() {
     const status = this.status
-    if (status === 'created')
-      return { name: 'Создан', color: 'gray', textColor: 'black' }
+    if (status === 'created') return { name: 'Создан', color: '#1ac30b' }
     else if (status === 'validated')
-      return { name: 'Проверен', color: 'gray', textColor: 'green' }
-    else if (status === 'accepted')
-      return { name: 'Принят', color: 'gray', textColor: 'orange' }
-    else if (status === 'declined')
-      return { name: 'Отменен', color: 'red', textColor: 'white' }
-    else if (status === 'closed')
-      return { name: 'Завершен', color: 'green', textColor: 'white' }
-    else if (status === 'on_way')
-      return { name: 'В пути', color: 'orange', textColor: 'white' }
+      return { name: 'Проверен', color: '#929292' }
+    else if (status === 'accepted') return { name: 'Принят', color: '#929292' }
+    else if (status === 'declined') return { name: 'Отменен', color: '#dc1818' }
+    else if (status === 'closed') return { name: 'Завершен', color: '#1ac30b' }
+    else if (status === 'on_way') return { name: 'В пути', color: '#f5841c' }
     else if (status === 'cooking')
-      return { name: 'Готовится', color: 'yellow', textColor: 'black' }
-    else return { name: 'Готово', color: 'primary', textColor: 'white' }
+      return { name: 'Готовится', color: '#e7f51c' }
+    else return { name: 'Готов', color: '#5a39ac' }
   }
 
   get deliveryType() {

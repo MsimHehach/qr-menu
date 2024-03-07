@@ -1,3 +1,13 @@
+import { menuRulesForAddingRepo } from './../models/menu/menuItem/menuRulesForAdding/menuRulesForAddingRepo'
+import {
+  OrderReviewRepo,
+  orderReviewRepo,
+} from './../models/order/orderReview/orderReviewRepo'
+import {
+  WaiterCallRepo,
+  waiterCallRepo,
+} from './../models/customer/waiterCall/waiterCallRepo'
+import { PadRepo, padRepo } from './../models/pads/padRepo'
 import { customerRepo, CustomerRepo } from './../models/customer/customerRepo'
 import {
   AppSettingsRepo,
@@ -49,6 +59,7 @@ import { menuRepo, MenuRepo } from './../models/menu/menuRepo'
 import { store, Store } from 'src/models/store'
 import { boot } from 'quasar/wrappers'
 import { PromotionsRepo } from 'src/models/promotion/promotionsRepo'
+import { MenuRulesForAddingRepo } from 'src/models/menu/menuItem/menuRulesForAdding/menuRulesForAddingRepo'
 
 declare module '@vue/runtime-core' {
   interface ComponentCustomProperties {
@@ -71,6 +82,10 @@ declare module '@vue/runtime-core' {
     $company: CompanyRepo
     $appSettings: AppSettingsRepo
     $customer: CustomerRepo
+    $pad: PadRepo
+    $waiterCall: WaiterCallRepo
+    $orderReview: OrderReviewRepo
+    $menuRulesForAdding: MenuRulesForAddingRepo
   }
 }
 
@@ -94,4 +109,8 @@ export default boot(({ app }) => {
   app.config.globalProperties.$company = companyRepo
   app.config.globalProperties.$appSettings = appSettingsRepo
   app.config.globalProperties.$customer = customerRepo
+  app.config.globalProperties.$pad = padRepo
+  app.config.globalProperties.$waiterCall = waiterCallRepo
+  app.config.globalProperties.$orderReview = orderReviewRepo
+  app.config.globalProperties.$menuRulesForAdding = menuRulesForAddingRepo
 })

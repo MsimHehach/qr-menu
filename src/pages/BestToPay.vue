@@ -1,6 +1,6 @@
 <template>
   <div class="column gap-5">
-    <q-img style="max-width: 700px" src="~assets/paymentServices.png" />
+    <q-img style="max-width: 700px" src="assets/paymentServices.png" />
     <div>
       Оплатить заказ можно с помощью банковских карт платёжных систем Visa,
       MasterCard, МИР. При оплате банковской картой безопасность платежей

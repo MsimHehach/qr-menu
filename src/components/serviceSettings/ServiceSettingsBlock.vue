@@ -1,67 +1,72 @@
 <template>
   <div
     @click="openDialog()"
-    class="row no-wrap gap-3 py-2 pl-xs-3 pl-sm-5 pr-xs-3 pr-sm-7 cursor-pointer box-shadow border-radius items-center"
-    :class="
-      $cart.item?.type === 'delivery'
-        ? 'bg-delivery-button-color text-on-delivery-button-color'
-        : $cart.item?.type === 'pickup'
-        ? 'bg-pickup-button-color text-on-pickup-button-color'
-        : $cart.item?.type === 'booking'
-        ? 'bg-booking-button-color text-on-booking-button-color'
-        : 'background-color text-on-background-color'
-    "
-    :style="
-      $cart.item
-        ? $q.screen.sm
-          ? 'max-width: 250px'
-          : 'max-width: 350px;'
-        : ''
-    "
-    style="overflow: hidden"
+    class="row no-wrap justify-between items-center cursor-pointer button bg-product-tile-color px-8 col"
+    :style="`height: ${$q.screen.lt.md ? '42' : '44'}px`"
   >
-    <div style="background-color: #ffffff7f" class="border-radius px-4 py-3">
-      <q-icon
-        size="20px"
-        :name="
-          $cart.item
-            ? $cart.item.type === 'pickup'
-              ? 'fa-light fa-person-walking'
-              : $cart.item.type === 'booking'
-              ? 'fa-light fa-calendar-day'
-              : 'fa-light fa-house'
-            : 'fa-light fa-square-question'
-        "
-      />
-    </div>
-    <div v-if="!$q.screen.xs" class="column col gap-1">
-      <div style="line-height: 18px" class="bold">
-        {{ $cart.item ? currentDeliveryType() : 'Укажите тип доставки' }}
-      </div>
-      <div v-if="currentAddress" class="row full-width">
-        <div class="ellipsis">
-          {{ currentAddress }}
+    <div
+      class="row no-wrap gap-4 body items-center text-on-product-tile-color"
+      style="overflow: hidden"
+    >
+      <div
+        v-if="!$cart.item"
+        class="row no-wrap gap-4 items-center"
+        style="overflow: inherit"
+      >
+        <!-- <CustomIcon width="28px" height="28px" name="bagOnTime.svg" /> -->
+        <CIcon
+          name="fa-regular fa-bag-shopping"
+          color="on-product-tile-color"
+          size="22px"
+        />
+        <div style="line-height: 15px" class="bold nowrap-content">
+          {{
+            $q.screen.lt.lg ? 'Способ получения' : 'Выберите способ получения'
+          }}
         </div>
       </div>
+      <template v-else>
+        <div class="row no-wrap gap-md-4 gap-xs-2 items-center">
+          <!-- <CustomIcon width="28px" height="28px" name="bagOnTime.svg" /> -->
+          <CIcon
+            name="fa-regular fa-bag-shopping"
+            color="on-product-tile-color"
+            size="22px"
+          />
+          <div class="bold text-primary">
+            {{ $cart.item.currentDeliveryType }}
+          </div>
+        </div>
+        <div
+          class="row no-wrap gap-4 items-center"
+          style="overflow: inherit !important"
+        >
+          <div class="rounded-separator"></div>
+          <div class="nowrap-content">
+            {{ $cart.item.currentAddress }}
+          </div>
+        </div>
+      </template>
     </div>
+    <CIcon
+      size="22px"
+      color="on-product-tile-color"
+      name="fa-regular fa-angle-right"
+    />
   </div>
 </template>
 <script lang="ts" setup>
-import { cartRepo } from 'src/models/carts/cartRepo'
-import { computed } from 'vue'
 import { companyGroupRepo } from 'src/models/companyGroup/companyGroupRepo'
 import { store } from 'src/models/store'
-
-const currentAddress = computed(() => {
-  return cartRepo.item
-    ? cartRepo.item.type === 'delivery'
-      ? cartRepo.item.deliveryAddress?.name
-      : cartRepo.item.salesPoint.customAddress ||
-        cartRepo.item.salesPoint.address
-    : ''
-})
+import CIcon from '../template/helpers/CIcon.vue'
+// import CustomIcon from '../template/helpers/CustomIcon.vue'
+import { authentication } from 'src/models/authentication/authentication'
 
 const openDialog = () => {
+  if (!authentication.user) {
+    store.authModal = true
+    return
+  }
   if (!companyGroupRepo.item) return
   if (companyGroupRepo.item?.companies.length > 1) {
     store.selectCompanyModal = true
@@ -69,14 +74,31 @@ const openDialog = () => {
     store.serviceSettingsModal = true
   }
 }
-
-const currentDeliveryType = () => {
-  if (cartRepo.item?.type === 'pickup') {
-    return 'Самовывоз'
-  } else if (cartRepo.item?.type === 'delivery') {
-    return 'Доставка'
-  } else if (cartRepo.item?.type === 'booking') {
-    return 'Бронь'
-  }
-}
 </script>
+
+<style lang="scss" scoped>
+.button {
+  border-radius: 100px !important;
+  max-width: 430px;
+  border: 1px solid var(--secondary);
+  // width: inherit;
+  // width: 100% !important;
+}
+
+.rounded-separator {
+  width: 4px;
+  height: 4px;
+  min-width: 4px;
+  max-width: 4px;
+  background-color: var(--on-background-color);
+  border-radius: 50%;
+}
+
+.nowrap-content {
+  white-space: nowrap;
+  overflow: hidden;
+  width: fit-content;
+  text-overflow: ellipsis;
+  // text-size-adjust: 10%;
+}
+</style>

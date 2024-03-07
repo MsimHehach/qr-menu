@@ -1,5 +1,6 @@
 <template>
   <div
+    v-if="ready"
     style="height: 100vh; width: 100vw"
     class="back-panel row justify-center items-center"
   >
@@ -17,7 +18,24 @@
     </div>
   </div>
 </template>
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+import { useRouter, useRoute } from 'vue-router'
+import { onMounted, ref } from 'vue'
+
+const router = useRouter()
+const route = useRoute()
+const ready = ref(false)
+
+onMounted(async () => {
+  if (
+    route.name !== '404page' &&
+    !window.location.hostname.includes('loyalhub')
+  ) {
+    await router.replace({ name: 'home' })
+  }
+  ready.value = true
+})
+</script>
 
 <style lang="scss" scoped>
 body.screen--xl {

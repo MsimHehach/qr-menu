@@ -23,7 +23,7 @@
         :label="count"
       />
       <q-btn
-        class="border-radius"
+        class="border-radius2"
         @mouseover="_hover = true"
         @mouseleave="_hover = false"
         :ripple="ripple"
@@ -199,17 +199,17 @@ const _iconSize = computed(() => {
   margin-right: 0 !important;
 }
 .borderedButton:hover {
-  color: $accent4 !important;
+  color: var(--primary) !important;
 }
 
-.borderedButton:hover:before {
-  border: 1px solid $accent4;
-  transition: 0.3s;
-}
+// .borderedButton:hover:before {
+//   // border: 1px solid $accent4;
+//   transition: 0.3s;
+// }
 
-.q-btn--outline:before {
-  border: 1px solid $secondary;
-}
+// .q-btn--outline:before {
+//   // border: 1px solid $secondary;
+// }
 
 body.screen--sm {
   .q-badge {

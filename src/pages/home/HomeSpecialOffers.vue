@@ -1,113 +1,152 @@
 <template>
   <div id="offers">
-    <div class="header mb-12 c-container">Спец предложения</div>
-    <TabPicker
-      class="c-container"
-      @update-tab="$store.offersTab = $event"
-      :tabs="tabs"
-      :width="$q.screen.xs ? '100%' : undefined"
-      :model-value="$store.offersTab"
-    />
+    <div class="row c-container gap-6 items-center text-on-background-color">
+      <div
+        v-for="(el, index) in tabs"
+        :key="index"
+        class="row gap-6 items-center huge3 bold"
+      >
+        <div
+          v-if="index"
+          style="width: 9px; height: 9px; border-radius: 50%"
+          class="bg-secondary-text"
+        ></div>
+        <div
+          @click="$store.offersTab = el"
+          :class="
+            $store.offersTab !== el ? 'text-secondary-text' : 'text-primary'
+          "
+          class="cursor-pointer bold"
+        >
+          {{ el }}
+        </div>
+      </div>
+    </div>
 
     <SwiperContainer
-      use-bullets
       class="swiper"
+      :initial-slide="1"
+      no-navigation
       :slides-per-view="slidesPerView"
-      :items="$store.offersTab === 'Новости' ? $news.items : $promotion.items"
+      :items="$store.offersTab === 'Новости' ? $news.news : $news.promotions"
     >
       <template v-slot:item="{ item }">
         <div
-          style="height: 295px; overflow: hidden"
+          :style="`overflow: hidden; height: ${
+            $q.screen.gt.md ? '190px' : $q.screen.lt.md ? '150px' : '300px'
+          } `"
           @click="goToItem(item)"
-          class="cursor-pointer offer-block mt-10 body box-shadow border-radius column no-wrap bg-backing-color"
+          class="cursor-pointer body border-radius column no-wrap bg-backing-color mt-15"
         >
           <q-img
             :src="item.image?.thumbnail || $store.images.empty"
-            :style="`border-radius:${getBorderRadius}`"
-            height="180px"
-            style="min-height: 180px"
+            :style="`border-radius:${getBorderRadius}; object-position: left 50%;`"
+            height="100%"
+            position="left"
             fit="cover"
           >
             <template v-slot:error>
               <span>
                 <q-img
-                  class="user-image"
                   fit="cover"
-                  height="180px"
+                  height="100%"
                   :src="$store.images.empty"
                 ></q-img>
               </span>
             </template>
           </q-img>
-
-          <div
-            class="px-5 py-7 column full-width relative-position items-start full-height"
-          >
-            <div class="row full-width text-on-backing-color">
-              <div class="ellipsis">
-                {{ 'name' in item ? item.name : item.title }}
-              </div>
-            </div>
-            <div
-              v-if="
-                'shortDescription' in item
-                  ? item.shortDescription?.length
-                  : item.description?.length
-              "
-              class="mt-3 text-on-backing-color"
-              style="opacity: 0.6"
-            >
-              <div class="ellipsis-2-lines">
-                {{
-                  'shortDescription' in item
-                    ? item.shortDescription
-                    : item.description
-                }}
-              </div>
-            </div>
-            <CButton
-              @click="void 0"
-              style="position: absolute; bottom: 8px; left: 7px"
-              text-button
-              text-color="button-color"
-            >
-              Читать полностью</CButton
-            >
-          </div>
-        </div>
-      </template></SwiperContainer
+        </div> </template
+    ></SwiperContainer>
+    <!-- <SwiperContainer
+      v-else
+      class="swiper"
+      :initial-slide="1"
+      :slides-per-view="slidesPerView"
+      :items="banners"
     >
+      <template v-slot:item="{ item }">
+        <div
+          style="overflow: hidden; height: 360px"
+          class="cursor-pointer body border-radius no-wrap bg-backing-color mb-20 mt-15 column justify-center"
+        >
+          <q-img
+            :src="getImage(item.image)"
+            height="360px"
+            class="border-radius"
+            fit="cover"
+            style="position: absolute"
+          >
+            <template v-slot:error>
+              <span>
+                <q-img
+                  fit="cover"
+                  height="100%"
+                  :src="$store.images.empty"
+                ></q-img>
+              </span>
+            </template>
+          </q-img>
+          <div
+            style="z-index: 10; padding-left: 10%; width: 45%"
+            class="text-white huge"
+          >
+            {{ item.text }}
+          </div>
+        </div></template
+      >
+    </SwiperContainer> -->
     <div
-      v-if="$store.offersTab === 'Новости' && !$news.items.length"
+      v-if="$store.offersTab === 'Новости' && !$news.news.length"
       class="header3 pl-6 my-20 c-container"
     >
       У вас нет новостей
     </div>
     <div
-      v-if="$store.offersTab === 'Акции' && !$promotion.items.length"
-      class="header3 pl-6 my-20 c-container"
+      v-if="$store.offersTab === 'Акции' && !$news.promotions.length"
+      class="header3 pl-6 my-lg-20 mt-xs-10 c-container"
     >
       У вас нет акций
     </div>
-
-    <div class="row no-wrap full-width gap-10 c-container"></div>
   </div>
 </template>
 
 <script setup lang="ts">
-import TabPicker from 'src/components/template/buttons/TabPicker.vue'
 import SwiperContainer from 'src/layouts/containers/SwiperContainer.vue'
 import { computed } from 'vue'
-import { Promotions } from 'src/models/promotion/promotions'
 import { News } from 'src/models/news/news'
-import { useRouter } from 'vue-router'
 import { uiSettingsRepo } from 'src/models/uiSettings/uiSettingsRepo'
-import CButton from 'src/components/template/buttons/CButton.vue'
 import { useQuasar } from 'quasar'
-
-const router = useRouter()
+import { store } from 'src/models/store'
+import { newsRepo } from 'src/models/news/newsRepo'
 
 const q = useQuasar()
+
+// const banners = [
+//   {
+//     image: 'baner1.jpg',
+//     text: 'Натуральные лимонады Starbar Craft',
+//   },
+//   {
+//     image: 'baner2.jpg',
+//     text: 'Знаменитый тайский суп Том Ям — от 369 ₽',
+//   },
+//   {
+//     image: 'baner1.jpg',
+//     text: 'Натуральные лимонады Starbar Craft',
+//   },
+//   {
+//     image: 'baner2.jpg',
+//     text: 'Знаменитый тайский суп Том Ям — от 369 ₽',
+//   },
+//   {
+//     image: 'baner1.jpg',
+//     text: 'Натуральные лимонады Starbar Craft',
+//   },
+//   {
+//     image: 'baner2.jpg',
+//     text: 'Знаменитый тайский суп Том Ям — от 369 ₽',
+//   },
+// ]
 
 const tabs = computed(() => {
   const result = []
@@ -117,43 +156,50 @@ const tabs = computed(() => {
 })
 
 const slidesPerView = computed(() => {
-  return q.screen.xs ? 1.3 : q.screen.sm ? 2.2 : 4
+  return q.screen.lt.md ? 1.2 : q.screen.lt.lg ? 2 : 4
+
+  // store.offersTab === 'Акции'
+  //   ? 1
+  //   :
 })
 
 const getBorderRadius = computed(() => {
   return `${uiSettingsRepo.item?.borderRadius}px ${uiSettingsRepo.item?.borderRadius}px 0 0`
 })
 
-const goToItem = (item: News | Promotions) => {
-  if ('shortDescription' in item) {
-    void router.push({ name: 'newsPage', params: { newsId: item.id } })
-  } else
-    void router.push({
-      name: 'promotionPage',
-      params: { promotionId: item.id },
-    })
+// const getImage = (link: string) => {
+//   try {
+//     return require('assets/' + link) as string
+//   } catch {
+//     return store.images.empty
+//   }
+// }
+
+const goToItem = (item: News) => {
+  void newsRepo.retrieve(item.id)
+  store.newsModal = true
 }
 </script>
 
 <style lang="scss" scoped>
-.swiper :deep(.swiper.swiper-initialized.swiper-horizontal) {
-  @media (max-width: 1919px) {
-    max-width: 1420px;
-  }
-  @media (min-width: 1919px) {
-    max-width: 1480px;
-  }
-}
+// .swiper :deep(.swiper.swiper-initialized.swiper-horizontal) {
+//   @media (max-width: 1919px) {
+//     max-width: 1420px;
+//   }
+//   @media (min-width: 1919px) {
+//     max-width: 1480px;
+//   }
+// }
 body.screen--xl {
   .swiper :deep(.swiper.swiper-initialized.swiper-horizontal) {
     @media (max-width: 1560px) {
-      padding-left: 60px;
-      padding-right: 60px;
+      padding-left: calc((100vw - (1170px)) / 2);
+      padding-right: calc((100vw - (1170px)) / 2);
     }
 
     @media (min-width: 1560px) {
-      padding-left: 30px;
-      padding-right: 30px;
+      padding-left: calc((100vw - (1290px)) / 2);
+      padding-right: calc((100vw - (1290px)) / 2);
     }
   }
 }
@@ -177,6 +223,15 @@ body.screen--md {
 }
 
 body.screen--sm {
+  .swiper :deep(.swiper.swiper-initialized.swiper-horizontal) {
+    width: 100%;
+    margin: 0 auto;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+}
+
+body.screen--xs {
   .swiper :deep(.swiper.swiper-initialized.swiper-horizontal) {
     width: 100%;
     margin: 0 auto;

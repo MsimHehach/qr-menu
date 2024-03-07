@@ -2,470 +2,300 @@
   <CDialog
     :model-value="modelValue"
     @update:model-value="$emit('update:modelValue', $event)"
-    width="456px"
+    :width="modalWidth"
     no-padding
-    height="580px"
+    :height="modalHeight"
+    :maximize="$q.screen.lt.lg"
+    :no-close="$q.screen.lt.md"
+    :position="$q.screen.lt.md ? 'bottom' : undefined"
   >
-    <template v-slot:header>
-      <div v-if="mode === 'select'">Тип доставки</div>
+    <template v-if="!newAddressMode">
       <div
-        v-if="mode === 'create'"
-        class="row gap-5 no-wrap items-center justify-between full-width"
+        v-if="$q.screen.gt.sm"
+        class="row full-width no-wrap bg-background-color text-on-background-color border-radius"
       >
-        <div class="row items-center no-wrap gap-5">
-          <CIconButton
-            @click="mode = 'select'"
-            icon="fa-light fa-angle-left"
-            hover-icon-color="primary"
-            icon-class="box-shadow"
-            color="white-opacity"
-            icon-color="on-secondary-button-color"
-            size="30px"
-          />
-          Создать адрес
-        </div>
         <div
-          class="row box-shadow bg-white-opacity px-4 py-2 border-radius justify-center items-center"
+          :class="
+            currentTab?.type === CartType.PICKUP ||
+            (currentTab?.type === CartType.BOOKING &&
+              bookingMode === 'bookingList')
+              ? ''
+              : 'col-12'
+          "
+          :style="
+            currentTab?.type === CartType.PICKUP ||
+            (currentTab?.type === CartType.BOOKING &&
+              bookingMode === 'bookingList')
+              ? `width: ${$q.screen.md ? '100%' : '47%'} `
+              : ''
+          "
+          class="column py-lg-15 py-xs-10 px-xs-10 px-lg-15"
         >
-          <CIcon
-            color="on-secondary-button-color"
-            name="fa-light fa-location-dot"
+          <ServiceModalHeader :tab="currentTab">
+            <template v-slot:action>
+              <CIcon
+                v-if="
+                  bookingMode === 'tablePicker' ||
+                  bookingMode === 'tableDetail' ||
+                  bookingMode === 'successBooked'
+                "
+                @click="navigationButtonClickHandler()"
+                name="fa-regular fa-angle-left"
+                hover-color="primary"
+                class="cursor-pointer"
+                size="24px"
+              />
+            </template>
+          </ServiceModalHeader>
+          <ServiceSettingsTabPicker
+            class="mt-12 mb-13"
+            @update-tab="currentTab = $event"
+            :tabs="availableCartTypes"
+            :model-value="currentTab || undefined"
           />
+          <div>
+            <DeliveryAddressesTab
+              v-if="currentTab?.type === CartType.DELIVERY"
+              :current-address="selectedDeliveryAddress"
+              @select="selectedDeliveryAddress = $event"
+              @edit="editAddressHandler($event)"
+            >
+              <template v-slot:bottom>
+                <div class="row full-width gap-6">
+                  <CButton
+                    @click="confirmSelectedAddress()"
+                    height="48px"
+                    label="Выбрать"
+                    :disabled="!selectedDeliveryAddress"
+                    :loading="$cart.setParamsLoading || $store.catalogLoading"
+                    class="col body"
+                  />
+                  <CButton
+                    @click="addAddressHandler()"
+                    label="Добавить адрес"
+                    height="48px"
+                    color="secondary-button-color"
+                    class="col body"
+                    text-color="on-secondary-button-color"
+                  />
+                </div>
+              </template>
+            </DeliveryAddressesTab>
+            <PickupAddressesTab
+              v-if="currentTab?.type === CartType.PICKUP"
+              @select="selectedPickupAddress = $event"
+              :current-point="selectedPickupAddress"
+            >
+              <template v-slot:bottom>
+                <CButton
+                  @click="confirmSelectedAddress()"
+                  height="48px"
+                  width="100%"
+                  :loading="$cart.setParamsLoading || $store.catalogLoading"
+                  class="body"
+                  label="Заберу здесь"
+                />
+              </template>
+            </PickupAddressesTab>
+            <template v-if="currentTab?.type === CartType.BOOKING">
+              <BookingAddressesTab
+                v-if="bookingMode === 'bookingList'"
+                @select="selectedSalesPoint = $event"
+                :current-point="selectedSalesPoint"
+              >
+                <template v-slot:bottom>
+                  <CButton
+                    @click="bookingMode = 'bookingInfo'"
+                    height="48px"
+                    :disabled="!selectedSalesPoint"
+                    width="100%"
+                    class="body"
+                    label="Выбрать"
+                  />
+                </template>
+              </BookingAddressesTab>
+              <BookingInfo
+                v-if="bookingMode != 'bookingList'"
+                :sales-point="selectedSalesPoint"
+                :current-mode="bookingMode"
+                @change-booking-mode="bookingMode = $event"
+                @close="$emit('update:modelValue', false)"
+              />
+            </template>
+            <DeliveryAggregatorTab
+              v-if="currentTab?.type === AggregatorType.DELIVERY_CLUB"
+              :tab="currentTab"
+            />
+            <YandexAggregatorTab
+              v-if="currentTab?.type === AggregatorType.YANDEX"
+              :tab="currentTab"
+            />
+          </div>
         </div>
+        <SalesPointsOnMap
+          v-if="
+            $q.screen.gt.md &&
+            (currentTab?.type === CartType.PICKUP ||
+              (currentTab?.type === CartType.BOOKING &&
+                bookingMode === 'bookingList'))
+          "
+          :selected-point="selectedPickupAddress"
+          :addresses="currentSalesPoints || []"
+          @select="
+            currentTab?.type === CartType.DELIVERY
+              ? (selectedSalesPoint = $event)
+              : (selectedPickupAddress = $event)
+          "
+        />
       </div>
-      <div
-        v-if="mode === 'bookingInfo'"
-        class="row gap-5 no-wrap items-center justify-between full-width"
-      >
-        <div class="row items-center no-wrap gap-5">
-          <CIconButton
-            @click="bookingBackHandler()"
-            icon="fa-light fa-angle-left"
-            hover-icon-color="primary"
-            color="white-opacity box-shadow"
-            icon-color="on-secondary-button-color"
-            size="30px"
+      <div v-else class="full-height column text-on-background-color">
+        <SalesPointsOnMap
+          v-if="
+            mobileViewTypeConfirmed &&
+            (currentTab?.type === CartType.PICKUP ||
+              (currentTab?.type === CartType.BOOKING &&
+                bookingMode === 'bookingList'))
+          "
+          :selected-point="selectedPickupAddress"
+          :addresses="currentSalesPoints || []"
+          @select="
+            currentTab?.type === CartType.DELIVERY
+              ? (selectedSalesPoint = $event)
+              : (selectedPickupAddress = $event)
+          "
+        />
+        <DeliveryTypeSelector
+          v-if="!mobileViewTypeConfirmed"
+          @confirm="mobileViewTypeConfirmed = true"
+          @select="currentTab = $event"
+          :types="availableCartTypes"
+          :current-tab="currentTab"
+        />
+        <template v-else>
+          <DeliveryAddressesTab
+            v-if="currentTab?.type === CartType.DELIVERY"
+            :current-address="selectedDeliveryAddress"
+            @back="mobileViewTypeConfirmed = false"
+            @select="selectedDeliveryAddress = $event"
+            @edit="editAddressHandler($event)"
+            @add-address="addAddressHandler()"
+          >
+            <template v-slot:bottom>
+              <div class="row full-width gap-6">
+                <CButton
+                  @click="confirmSelectedAddress()"
+                  :height="$q.screen.lt.md ? '40px' : '48px'"
+                  label="Выбрать"
+                  :disabled="!selectedDeliveryAddress"
+                  :loading="$cart.setParamsLoading || $store.catalogLoading"
+                  class="col body"
+                />
+              </div>
+            </template>
+          </DeliveryAddressesTab>
+          <PickupAddressesTab
+            v-if="currentTab?.type === CartType.PICKUP"
+            @select="selectedPickupAddress = $event"
+            @back="mobileViewTypeConfirmed = false"
+            :current-point="selectedPickupAddress"
+          >
+            <template v-slot:bottom>
+              <CButton
+                @click="confirmSelectedAddress()"
+                :height="$q.screen.lt.md ? '40px' : '48px'"
+                width="100%"
+                :loading="$cart.setParamsLoading || $store.catalogLoading"
+                class="subtitle-text"
+                label="Заберу здесь"
+              />
+            </template>
+          </PickupAddressesTab>
+          <template v-if="currentTab?.type === CartType.BOOKING">
+            <BookingAddressesTab
+              v-if="bookingMode === 'bookingList'"
+              @select="selectedSalesPoint = $event"
+              @back="mobileViewTypeConfirmed = false"
+              :current-point="selectedSalesPoint"
+            >
+              <template v-slot:bottom>
+                <CButton
+                  @click="bookingMode = 'bookingInfo'"
+                  :height="$q.screen.lt.md ? '40px' : '48px'"
+                  :disabled="!selectedSalesPoint"
+                  width="100%"
+                  class="subtitle-text col-6"
+                  label="Выбрать"
+                />
+              </template>
+            </BookingAddressesTab>
+            <BookingInfo
+              v-if="bookingMode != 'bookingList'"
+              :sales-point="selectedSalesPoint"
+              :current-mode="bookingMode"
+              @change-booking-mode="bookingMode = $event"
+              @close="$emit('update:modelValue', false)"
+              @back="navigationButtonClickHandler()"
+            />
+          </template>
+          <DeliveryAggregatorTab
+            v-if="currentTab?.type === AggregatorType.DELIVERY_CLUB"
+            :tab="currentTab"
+            @back="mobileViewTypeConfirmed = false"
           />
-          {{
-            bookingMode === 'bookingInfo'
-              ? 'Данные бронирования'
-              : bookingMode === 'tablePicker'
-              ? 'Выберите стол'
-              : 'Информация'
-          }}
-        </div>
-        <div
-          class="row box-shadow bg-white-opacity px-4 py-2 border-radius justify-center items-center"
-        >
-          <CIcon
-            color="on-secondary-button-color"
-            :name="
-              bookingMode === 'tableDetail'
-                ? 'fa-light fa-info-circle'
-                : 'fa-light fa-calendar-day'
-            "
+          <YandexAggregatorTab
+            v-if="currentTab?.type === AggregatorType.YANDEX"
+            :tab="currentTab"
+            @back="mobileViewTypeConfirmed = false"
           />
-        </div>
+        </template>
       </div>
     </template>
-    <div class="full-height text-on-background-color">
-      <q-tab-panels
-        style="height: 520px !important"
-        animated
-        v-model="mode"
-        class="bg-transparent full-height"
-      >
-        <q-tab-panel name="select" class="pa-0 column no-wrap pt-10 px-10">
-          <div class="full-width">
-            <div
-              :style="$q.screen.xs ? 'overflow-x: auto' : ''"
-              class="row full-width no-wrap mb-15 gap-5"
-            >
-              <CButton
-                v-for="(type, index) in availableCartTypes"
-                :key="index"
-                @click="currentTab = type.type"
-                :label="type.label"
-                :icon="type.icon"
-                :class="
-                  currentTab === type.type
-                    ? type.class
-                    : 'text-on-secondary-button-color'
-                "
-                :color="
-                  currentTab === type.type
-                    ? type.color
-                    : 'secondary-button-color'
-                "
-              />
-              <!-- <CButton
-              v-if="
-                $company.item?.salesPoints?.some(
-                  (v) => v.settings.delivery_enabled
-                )
-              "
-              @click="currentTab = CartType.DELIVERY"
-              label="Доставка"
-              height="38px"
-              icon="fa-light fa-home"
-              class="box-shadow"
-              :class="
-                currentTab === CartType.DELIVERY
-                  ? 'text-on-delivery-button-color'
-                  : 'text-on-secondary-button-color'
-              "
-              :color="
-                currentTab === CartType.DELIVERY
-                  ? 'delivery-button-color'
-                  : 'secondary-button-color'
-              "
-            />
-            <CButton
-              v-if="
-                $company.item?.salesPoints?.some(
-                  (v) => v.settings.pickup_enabled
-                )
-              "
-              @click="currentTab = 2"
-              label="Самовывоз"
-              height="38px"
-              icon="fa-light fa-store"
-              class="box-shadow"
-              :class="
-                currentTab === 2
-                  ? 'text-on-pickup-button-color'
-                  : 'text-on-secondary-button-color'
-              "
-              :color="
-                currentTab === 2
-                  ? 'pickup-button-color'
-                  : 'secondary-button-color'
-              "
-            />
-            <CButton
-              v-if="
-                $company.item?.salesPoints?.some(
-                  (v) => v.settings.booking_enabled
-                )
-              "
-              @click="currentTab = 3"
-              label="Бронь"
-              height="38px"
-              icon="fa-light fa-calendar-day"
-              class="box-shadow"
-              :class="
-                currentTab === 3
-                  ? 'text-on-booking-button-color'
-                  : 'text-on-secondary-button-color'
-              "
-              :color="
-                currentTab === 3
-                  ? 'booking-button-color'
-                  : 'secondary-button-color'
-              "
-            /> -->
-              <div v-if="!availableCartTypes.length">
-                Нет доступных способов заказа
-              </div>
-            </div>
-          </div>
-          <div
-            :class="{
-              'col-grow':
-                ($deliveryAddress.items.length < 6 &&
-                  currentTab === CartType.DELIVERY) ||
-                currentTab === CartType.PICKUP ||
-                (currentTab === CartType.BOOKING &&
-                  ($company.cartCompany?.salesPoints
-                    ? $company.cartCompany?.salesPoints.length < 6
-                    : true)) ||
-                !currentTab,
-            }"
-            class="relative-position column no-wrap justify-between items-center pb-10"
-          >
-            <div
-              v-if="
-                !$deliveryAddress.items.length &&
-                currentTab === CartType.DELIVERY
-              "
-            ></div>
-            <q-tab-panels
-              v-if="currentTab"
-              animated
-              v-model="currentTab"
-              class="bg-transparent full-width"
-            >
-              <q-tab-panel
-                :name="CartType.DELIVERY"
-                class="px-0 py-0 full-height"
-              >
-                <template v-if="!deliveryAddressRepo.items.length">
-                  <div></div>
-                  <div class="column items-center">
-                    <CIcon
-                      size="75px"
-                      class="mb-17"
-                      name="fa-thin fa-map-location-dot"
-                      color="on-background-color"
-                    />
-                    <div style="font-weight: 400" class="header3">
-                      У вас нет адресов доставки
-                    </div>
-                  </div>
-                </template>
-                <div v-else class="column full-width">
-                  <div class="full-width header2 mb-10">Адреса доставки</div>
-                  <template
-                    v-for="(el, index) in $deliveryAddress.items"
-                    :key="index"
-                  >
-                    <q-separator
-                      v-if="index"
-                      color="divider-color"
-                      class="my-6 mr-2"
-                    />
-                    <div
-                      @click="selectedAddress = el"
-                      class="row no-wrap cursor-pointer items-center pr-5 full-width justify-between"
-                    >
-                      <div
-                        :class="{
-                          'text-primary':
-                            el.id === $cart.item?.deliveryAddress?.id,
-                        }"
-                        class="column body col-10"
-                      >
-                        <div class="bold mb-3">
-                          {{ el.name }}
-                        </div>
-                        <div class="ellipsis-2-lines">
-                          {{ el.address }}
-                        </div>
-                      </div>
-                      <!-- <div
-                        v-if="selectedAddress?.id === el.id"
-                        class="bg-on-background-color"
-                        style="border-radius: 50%; padding: 4px 6px"
-                      >
-                        <CIcon
-                          name="fa-solid fa-check"
-                          color="background-color"
-                        />
-                      </div> -->
-                      <RoundedSelector
-                        :model-value="selectedAddress?.id === el.id"
-                      />
-                    </div>
-                  </template>
-                </div>
-              </q-tab-panel>
-              <q-tab-panel :name="CartType.PICKUP" class="px-0 py-0 column">
-                <div class="full-width header2 mb-10">Адреса самовывоза</div>
-                <div
-                  v-for="(el, index) in availablePickupAddresses"
-                  :key="index"
-                  class="full-width"
-                >
-                  <q-separator
-                    v-if="index"
-                    class="my-5"
-                    color="divider-color"
-                  />
-                  <div
-                    style="min-height: 29px"
-                    @click="selectedPickupAddress = el.id || null"
-                    class="row no-wrap justify-between gap-3 full-width cursor-pointer items-center"
-                  >
-                    <div
-                      :class="{
-                        'text-primary':
-                          el.id === $cart.item?.salesPoint?.id &&
-                          $cart.item?.type === CartType.PICKUP,
-                      }"
-                      class="col"
-                    >
-                      {{ el.customAddress || el.address }}
-                    </div>
-                    <RoundedSelector
-                      :model-value="selectedPickupAddress === el.id"
-                    />
-                    <!-- <div
-                      v-if="selectedPickupAddress === el.id"
-                      class="bg-on-background-color"
-                      style="border-radius: 50%; padding: 4px 6px"
-                    >
-                      <CIcon
-                        name="fa-solid fa-check"
-                        color="background-color"
-                      />
-                    </div> -->
-                  </div>
-                </div>
-              </q-tab-panel>
-              <q-tab-panel :name="CartType.BOOKING" class="px-0 py-0 column">
-                <div class="full-width header2 mb-10">Адреса заведений</div>
-                <div
-                  v-for="(el, index) in availableBookingAddresses"
-                  :key="index"
-                  class="full-width"
-                >
-                  <q-separator
-                    v-if="index"
-                    class="my-5"
-                    color="divider-color"
-                  />
-                  <div
-                    style="min-height: 29px"
-                    @click="selectedSalesPoint = el.id || null"
-                    class="row justify-between gap-3 no-wrap full-width cursor-pointer items-center"
-                  >
-                    <div
-                      :class="{
-                        'text-primary':
-                          el.id === $cart.item?.salesPoint?.id &&
-                          $cart.item?.type === CartType.BOOKING,
-                      }"
-                      class="col"
-                    >
-                      {{ el.customAddress || el.address }}
-                    </div>
-                    <!-- <div
-                      :class="{
-                        'bg-on-background-color': selectedSalesPoint === el.id,
-                      }"
-                      style="border-radius: 50%; padding: 4px 6px"
-                    >
-                      <CIcon
-                        :style="`visibility: ${
-                          selectedSalesPoint === el.id ? 'visible' : 'hidden'
-                        }`"
-                        name="fa-solid fa-check"
-                        color="background-color"
-                      />
-                    </div> -->
-                    <RoundedSelector
-                      :model-value="selectedSalesPoint === el.id"
-                    />
-                  </div>
-                </div>
-              </q-tab-panel>
-            </q-tab-panels>
-            <div v-else></div>
-
-            <!-- <div v-if="!currentTab" class="header3 column items-center">
-              <CIcon
-                size="75px"
-                class="mb-17"
-                color="on-background-color"
-                name="fa-thin fa-truck"
-              />
-              <div>Выберите удобный для вас тип доставки</div>
-            </div> -->
-
-            <div class="column mt-15 items-center">
-              <template v-if="currentTab === CartType.DELIVERY">
-                <CButton
-                  v-if="$deliveryAddress.items.length"
-                  @click="mode = 'create'"
-                  text-button
-                  text-color="on-background-color"
-                  class="mb-5"
-                >
-                  <div style="text-decoration: underline">
-                    Создать адрес
-                  </div></CButton
-                >
-
-                <CButton
-                  @click="
-                    $deliveryAddress.items.length
-                      ? selectAddress()
-                      : (mode = 'create')
-                  "
-                  :label="
-                    $deliveryAddress.items.length ? 'Выбрать' : 'Создать адрес'
-                  "
-                  :disabled="
-                    !selectedAddress && !!$deliveryAddress.items.length
-                  "
-                  class=""
-                  color="button-color"
-                  text-color="on-button-color"
-                  :width="$q.screen.xs ? '200' : '280'"
-                  height="50"
-              /></template>
-              <CButton
-                v-else
-                @click="selectAddress()"
-                :label="currentTab === CartType.BOOKING ? 'Далее' : 'Выбрать'"
-                :disabled="disableFurtherButton"
-                class=""
-                :width="$q.screen.xs ? '200' : '280'"
-                color="button-color"
-                text-color="on-button-color"
-                height="50"
-              />
-            </div>
-          </div>
-        </q-tab-panel>
-        <q-tab-panel
-          style="height: 520px !important"
-          name="create"
-          class="pa-10"
-        >
-          <CreateDeliveryAddress
-            @create=";(mode = 'select'), deliveryAddressRepo.list()"
-          />
-        </q-tab-panel>
-        <q-tab-panel
-          style="height: 520px !important; overflow: hidden"
-          name="bookingInfo"
-          class="pa-0"
-        >
-          <BookingInfo
-            v-if="selectedSalesPoint"
-            @change-booking-mode="bookingMode = $event"
-            @close="$emit('update:modelValue', false)"
-            :booking-mode="bookingMode"
-            :sales-point="selectedSalesPoint"
-          />
-        </q-tab-panel>
-      </q-tab-panels>
-    </div>
+    <template v-else>
+      <CreateDeliveryAddress
+        :back-callback="() => (newAddressMode = false)"
+        @updated="deliveryAddressCreateHandler()"
+        @created="deliveryAddressCreateHandler($event)"
+        :address="deliveryAddressToEdit || undefined"
+      />
+    </template>
   </CDialog>
 </template>
 <script lang="ts" setup>
-import CButton from '../template/buttons/CButton.vue'
-import CDialog from '../template/dialogs/CDialog.vue'
-import { ref, watch, computed } from 'vue'
-import CIcon from '../template/helpers/CIcon.vue'
-import CreateDeliveryAddress from './CreateDeliveryAddress.vue'
-import { deliveryAddressRepo } from 'src/models/customer/deliveryAddress/deliveryAddressRepo'
-import { DeliveryAddress } from 'src/models/customer/deliveryAddress/deliveryAddress'
-import { deliveryAreaRepo } from 'src/models/deliveryAreas/deliveryAreaRepo'
-import { cartRepo } from 'src/models/carts/cartRepo'
-import BookingInfo, { BookingModes } from './BookingInfo.vue'
-import CIconButton from '../template/buttons/CIconButton.vue'
-import { Notify } from 'quasar'
-import RoundedSelector from 'src/components/template/buttons/RoundedSelector.vue'
-import { store } from 'src/models/store'
 import { CartType } from 'src/models/carts/cart'
+import CDialog from '../template/dialogs/CDialog.vue'
+import { ref, computed, watch } from 'vue'
 import { companyRepo } from 'src/models/company/companyRepo'
 import { authentication } from 'src/models/authentication/authentication'
+import ServiceSettingsTabPicker from './ServiceSettingsTabPicker.vue'
+import DeliveryAddressesTab from './DeliveryAddressesTab.vue'
+import { deliveryAddressRepo } from 'src/models/customer/deliveryAddress/deliveryAddressRepo'
+import { cartRepo } from 'src/models/carts/cartRepo'
+import { DeliveryAddress } from 'src/models/customer/deliveryAddress/deliveryAddress'
+import { SalesPoint } from 'src/models/salesPoint/salesPoint'
+import { deliveryAreaRepo } from 'src/models/deliveryAreas/deliveryAreaRepo'
+import { Notify, useQuasar } from 'quasar'
+import { store } from 'src/models/store'
+import { menuGroupRepo } from 'src/models/menu/menuGroups/menuGroupRepo'
+import ServiceModalHeader from './ServiceModalHeader.vue'
+import CreateDeliveryAddress from './CreateDeliveryAddress.vue'
+import CButton from '../template/buttons/CButton.vue'
+import PickupAddressesTab from './PickupAddressesTab.vue'
+import BookingAddressesTab from './BookingAddressesTab.vue'
+import SalesPointsOnMap from './SalesPointsOnMap.vue'
+import BookingInfo from './BookingInfo.vue'
+import CIcon from '../template/helpers/CIcon.vue'
+import { AggregatorType } from 'src/models/company/company'
+import DeliveryAggregatorTab from './DeliveryAggregatorTab.vue'
+import YandexAggregatorTab from './YandexAggregatorTab.vue'
+import { menuRepo } from 'src/models/menu/menuRepo'
+import { menuItemRepo } from 'src/models/menu/menuItem/menuItemRepo'
+import DeliveryTypeSelector from './DeliveryTypeSelector.vue'
 
-export type ServiceModes = 'create' | 'select' | 'bookingInfo'
-
-const currentTab = ref<CartType | null>(null)
-
-const selectedAddress = ref<DeliveryAddress | null>(null)
-
-const selectedPickupAddress = ref<string | null>(null)
-
-const selectedSalesPoint = ref<string | null>(null)
-
-const mode = ref<ServiceModes>('select')
-
-const bookingMode = ref<BookingModes>('bookingInfo')
+export type TabRaw = {
+  label: string | null
+  type: string
+  link?: string | null
+}
 
 const props = defineProps<{
   modelValue: boolean
@@ -475,48 +305,70 @@ const emit = defineEmits<{
   (evt: 'update:modelValue', value: boolean): void
 }>()
 
-const availableCartTypes = computed(() => {
-  const result = []
+export type BookingModes =
+  | 'bookingList'
+  | 'bookingInfo'
+  | 'tablePicker'
+  | 'tableDetail'
+  | 'successBooked'
 
-  if (
-    companyRepo.cartCompany?.salesPoints?.some(
-      (v) => v.settings.delivery_enabled
-    )
-  ) {
-    result.push({
-      label: 'Доставка',
-      type: CartType.DELIVERY,
-      icon: 'fa-light fa-home',
-      color: 'delivery-button-color',
-      class: 'text-on-delivery-button-color',
-    })
+const currentTab = ref<TabRaw | null>(null)
+
+const mobileViewTypeConfirmed = ref(false)
+
+const newAddressMode = ref(false)
+
+const selectedDeliveryAddress = ref<DeliveryAddress | null>(null)
+
+const selectedPickupAddress = ref<SalesPoint | null>(null)
+
+const selectedSalesPoint = ref<SalesPoint | null>(null)
+
+const bookingMode = ref<BookingModes>('bookingList')
+
+const deliveryAddressToEdit = ref<DeliveryAddress | null>(null)
+
+const q = useQuasar()
+
+watch(
+  () => props.modelValue,
+  (v) => {
+    if (v) {
+      void deliveryAddressRepo.list().then(() => {
+        selectCurrentTab()
+      })
+    }
   }
-  if (
-    companyRepo.cartCompany?.salesPoints?.some((v) => v.settings.pickup_enabled)
-  ) {
-    result.push({
-      label: 'Самовывоз',
-      type: CartType.PICKUP,
-      icon: 'fa-light fa-store',
-      color: 'pickup-button-color',
-      class: 'text-on-pickup-button-color',
-    })
-  }
-  if (
-    companyRepo.cartCompany?.salesPoints?.some(
-      (v) => v.settings.booking_enabled
-    ) &&
-    authentication.user
-  ) {
-    result.push({
-      label: 'Бронирование',
-      type: CartType.BOOKING,
-      icon: 'fa-light fa-calendar-day',
-      color: 'booking-button-color',
-      class: 'text-on-booking-button-color',
-    })
-  }
-  return result
+)
+
+const modalWidth = computed(() => {
+  return q.screen.lt.md
+    ? '450px'
+    : newAddressMode.value
+    ? '1094px'
+    : currentTab.value?.type === CartType.PICKUP ||
+      (currentTab.value?.type === CartType.BOOKING &&
+        bookingMode.value === 'bookingList')
+    ? '1300px'
+    : '649px'
+})
+
+const modalHeight = computed(() => {
+  return q.screen.lt.md &&
+    ((currentTab.value?.type === CartType.PICKUP &&
+      mobileViewTypeConfirmed.value) ||
+      (currentTab.value?.type === CartType.BOOKING &&
+        mobileViewTypeConfirmed.value &&
+        bookingMode.value === 'bookingList') ||
+      newAddressMode.value)
+    ? '100vh'
+    : 'unset'
+})
+
+const currentSalesPoints = computed(() => {
+  return currentTab.value?.type === CartType.PICKUP
+    ? availablePickupAddresses.value
+    : availableBookingAddresses.value
 })
 
 const availablePickupAddresses = computed(() => {
@@ -531,61 +383,128 @@ const availableBookingAddresses = computed(() => {
   )
 })
 
-const disableFurtherButton = computed(() => {
-  return currentTab.value === CartType.PICKUP
-    ? !selectedPickupAddress.value
-    : !selectedSalesPoint.value
+const availableCartTypes = computed(() => {
+  const result: TabRaw[] = []
+  if (
+    companyRepo.cartCompany?.salesPoints?.some(
+      (v) => v.settings.delivery_enabled
+    )
+  ) {
+    result.push({
+      label: 'Доставка',
+      type: CartType.DELIVERY,
+    })
+  }
+  if (
+    companyRepo.cartCompany?.salesPoints?.some((v) => v.settings.pickup_enabled)
+  ) {
+    result.push({
+      label: 'Самовывоз',
+      type: CartType.PICKUP,
+    })
+  }
+  if (
+    companyRepo.cartCompany?.salesPoints?.some(
+      (v) => v.settings.booking_enabled
+    ) &&
+    authentication.user
+  ) {
+    result.push({
+      label: 'Бронь',
+      type: CartType.BOOKING,
+    })
+  }
+  if (companyRepo.item)
+    companyRepo.item?.deliveryAggregators.forEach((el) => {
+      result.push({
+        label: el.type === AggregatorType.YANDEX ? 'Яндекс еда' : 'Деливери',
+        type: el.type,
+        link: el.link,
+      })
+    })
+  return result
 })
 
-watch(
-  () => props.modelValue,
-  (v) => {
-    if (v) {
-      bookingMode.value = 'bookingInfo'
-      if (authentication.user) {
-        void deliveryAddressRepo.list().then(() => {
-          selectCurrentAddress()
-          if (availableCartTypes.value.length) {
-            currentTab.value = availableCartTypes.value[0].type
-          }
-        })
-      } else {
-        currentTab.value = availableCartTypes.value[0].type
-      }
-    }
-  }
-)
+const addAddressHandler = () => {
+  deliveryAddressToEdit.value = null
+  newAddressMode.value = true
+}
 
-watch(
-  () => currentTab.value,
-  () => {
-    selectCurrentAddress()
-  }
-)
+const editAddressHandler = (v: DeliveryAddress) => {
+  newAddressMode.value = true
+  deliveryAddressToEdit.value = v
+}
 
-const selectCurrentAddress = () => {
+const deliveryAddressCreateHandler = async (newAddress?: DeliveryAddress) => {
+  newAddressMode.value = false
+  void deliveryAddressRepo.list()
+  if (newAddress) {
+    selectedDeliveryAddress.value = newAddress
+    await confirmSelectedAddress()
+  }
+}
+
+const navigationButtonClickHandler = () => {
+  if (bookingMode.value === 'tablePicker') bookingMode.value = 'bookingInfo'
+  else if (bookingMode.value === 'tableDetail')
+    bookingMode.value = 'tablePicker'
+  else if (
+    bookingMode.value === 'successBooked' ||
+    bookingMode.value === 'bookingInfo'
+  )
+    bookingMode.value = 'bookingList'
+}
+
+const selectCurrentTab = () => {
   if (cartRepo.item) {
     if (cartRepo.item.type === CartType.DELIVERY) {
-      selectedAddress.value = cartRepo.item.deliveryAddress
+      selectedDeliveryAddress.value = cartRepo.item.deliveryAddress
+      selectedPickupAddress.value = null
+      selectedSalesPoint.value = null
     }
-    if (cartRepo.item.type === CartType.PICKUP)
-      selectedPickupAddress.value = cartRepo.item.salesPoint.id || null
-    if (cartRepo.item.type === CartType.BOOKING)
-      selectedSalesPoint.value = cartRepo.item.salesPoint.id || null
+    if (cartRepo.item.type === CartType.PICKUP) {
+      selectedPickupAddress.value = cartRepo.item.salesPoint || null
+      selectedDeliveryAddress.value = null
+      selectedSalesPoint.value = null
+      currentTab.value =
+        availableCartTypes.value.find((el) => el.type === CartType.PICKUP) ||
+        null
+    }
+    if (cartRepo.item.type === CartType.BOOKING) {
+      selectedSalesPoint.value = cartRepo.item.salesPoint || null
+    }
+    const foundType = availableCartTypes.value.find(
+      (el) => el.type === cartRepo.item?.type
+    )
+    if (foundType) {
+      currentTab.value = foundType
+      mobileViewTypeConfirmed.value = true
+    }
+  } else if (availableCartTypes.value.length) {
+    currentTab.value = availableCartTypes.value[0]
   }
 }
 
-const bookingBackHandler = () => {
-  bookingMode.value === 'bookingInfo'
-    ? (mode.value = 'select')
-    : bookingMode.value === 'tablePicker'
-    ? (bookingMode.value = 'bookingInfo')
-    : (bookingMode.value = 'tablePicker')
+const openPreviousMenuItem = () => {
+  if (!store.storedMenuItem) return
+  if (
+    menuRepo.item?.allMenuItems?.map((v) => v.id).includes(store.storedMenuItem)
+  ) {
+    void menuItemRepo.retrieve(store.storedMenuItem)
+    store.menuItemModal = true
+    store.storedMenuItem = null
+  }
 }
 
-const selectAddress = async () => {
-  if (selectedAddress.value && currentTab.value === CartType.DELIVERY) {
-    const res = await deliveryAreaRepo.byCoords(selectedAddress.value?.coords)
+const confirmSelectedAddress = async () => {
+  if (
+    selectedDeliveryAddress.value &&
+    currentTab.value?.type === CartType.DELIVERY
+  ) {
+    const res = await deliveryAreaRepo.byCoords([
+      selectedDeliveryAddress.value?.coords?.latitude || 0,
+      selectedDeliveryAddress.value?.coords?.longitude || 0,
+    ])
     if (!res.length) {
       Notify.create({
         message: 'По данному адресу не осуществляется доставка',
@@ -597,37 +516,24 @@ const selectAddress = async () => {
       await cartRepo.setParams({
         sales_point: res[0].salesPoint,
         type: 'delivery',
-        delivery_address: selectedAddress.value?.id,
+        delivery_address: selectedDeliveryAddress.value?.id,
       })
-
     await store.loadCatalog(res[0].salesPoint)
-
+    void openPreviousMenuItem()
     emit('update:modelValue', false)
   } else if (
-    currentTab.value === CartType.PICKUP &&
+    currentTab.value?.type === CartType.PICKUP &&
     selectedPickupAddress.value
   ) {
     if (authentication.user)
       await cartRepo.setParams({
-        sales_point: selectedPickupAddress.value,
+        sales_point: selectedPickupAddress.value.id,
         type: 'pickup',
       })
     await store.loadCatalog(selectedPickupAddress.value)
-
+    void openPreviousMenuItem()
     emit('update:modelValue', false)
-  } else if (currentTab.value === CartType.BOOKING) {
-    mode.value = 'bookingInfo'
-    // await cartRepo.setParams({
-    //   sales_point: selectedSalesPoint.value || '',
-    //   type: 'booking',
-    // });
   }
+  menuGroupRepo.elementsInViewport = []
 }
 </script>
-
-<style lang="scss" scoped>
-.q-tab-panels.q-panel-parent {
-  overflow-y: unset !important;
-  overflow-x: hidden !important;
-}
-</style>

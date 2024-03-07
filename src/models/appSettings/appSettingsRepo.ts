@@ -7,11 +7,12 @@ export class AppSettingsRepo extends BaseRepo<AppSettings> {
   api = appSettingsApi
   linksData: LinksSettingsRaw | null = null
 
-  async getLinksSettings(header: string) {
+  async getLinksSettings(header?: string) {
+    const headers = header ? { 'Company-Group': header } : undefined
     const res: LinksSettingsRaw = await this.api.send({
       method: 'GET',
       action: 'fetch',
-      headers: { 'Company-Group': header },
+      headers,
     })
     this.linksData = res
     return res

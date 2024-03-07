@@ -1,13 +1,17 @@
-<template>
-  <div></div>
-</template>
 <script lang="ts" setup>
 import { uiSettingsRepo } from 'src/models/uiSettings/uiSettingsRepo'
 import { onMounted, ref } from 'vue'
 
 const borderRadius = ref<string>('15px')
-const primaryColor = ref<string>('#ed772f')
+const borderRadius2 = ref<string>('10px')
+
+const primaryColor = ref<string>('#000')
 const onPrimaryColor = ref<string>('#000')
+
+const secondaryColor = ref<string>('#f8f8f8')
+const onSecondaryColor = ref<string>('#000')
+
+const secondaryTextColor = ref<string>('#f8f8f8')
 
 const accentColor = ref<string>('#fdffb7')
 const onAccentColor = ref<string>('#000')
@@ -77,8 +81,12 @@ const onLoyaltyCardBackgroundColor = ref<string>('#000')
 onMounted(() => {
   if (uiSettingsRepo.item) {
     borderRadius.value = `${uiSettingsRepo.item.borderRadius}px`
+    borderRadius2.value = `${uiSettingsRepo.item.borderRadiusSmall}px`
     primaryColor.value = `#${uiSettingsRepo.item.primaryColor.color}`
     onPrimaryColor.value = `#${uiSettingsRepo.item.primaryColor.on_color}`
+    secondaryColor.value = `#${uiSettingsRepo.item.secondaryColor.color}`
+    onSecondaryColor.value = `#${uiSettingsRepo.item.secondaryColor.on_color}`
+    secondaryTextColor.value = `#${uiSettingsRepo.item.secondaryTextColor.color}`
     accentColor.value = `#${uiSettingsRepo.item.accentColor.color}`
     onAccentColor.value = `#${uiSettingsRepo.item.accentColor.on_color}`
     backgroundColor.value = `#${uiSettingsRepo.item.backgroundColor.color}`
@@ -114,7 +122,7 @@ onMounted(() => {
     onBookingButtonColor.value = `#${uiSettingsRepo.item.bookingButtonColor.on_color}`
     modalHeaderColor.value = `#${uiSettingsRepo.item.modalHeaderColor.color}`
     onModalHeaderColor.value = `#${uiSettingsRepo.item.modalHeaderColor.on_color}`
-    boxShadow.value = `${uiSettingsRepo.item.boxShadow.offset_x}px ${uiSettingsRepo.item.boxShadow.offset_y}px ${uiSettingsRepo.item.boxShadow.blur}px ${uiSettingsRepo.item.boxShadow.spread}px ${uiSettingsRepo.item.boxShadow.color}`
+    boxShadow.value = `${uiSettingsRepo.item.boxShadow.offset_x}px ${uiSettingsRepo.item.boxShadow.offset_y}px ${uiSettingsRepo.item.boxShadow.blur}px ${uiSettingsRepo.item.boxShadow.spread}px #${uiSettingsRepo.item.boxShadow.color}`
     cashButtonColor.value = `#${uiSettingsRepo.item.cashButtonColor.color}`
     onCashButtonColor.value = `#${uiSettingsRepo.item.cashButtonColor.on_color}`
     cardButtonColor.value = `#${uiSettingsRepo.item.cardButtonColor.color}`
@@ -128,6 +136,11 @@ onMounted(() => {
   }
   document.body.style.setProperty('--primary', primaryColor.value)
   document.body.style.setProperty('--on-primary', onPrimaryColor.value)
+
+  document.body.style.setProperty('--secondary', secondaryColor.value)
+  document.body.style.setProperty('--on-secondary', onSecondaryColor.value)
+
+  document.body.style.setProperty('--secondary-text', secondaryTextColor.value)
 
   document.body.style.setProperty('--q-primary', primaryColor.value)
 
@@ -220,6 +233,7 @@ onMounted(() => {
     onModalHeaderColor.value
   )
   document.body.style.setProperty('--border-radius', borderRadius.value)
+  document.body.style.setProperty('--border-radius2', borderRadius2.value)
   document.body.style.setProperty('--box-shadow', boxShadow.value)
 
   document.body.style.setProperty('--cash-button-color', cashButtonColor.value)
@@ -257,6 +271,9 @@ onMounted(() => {
 $colors: (
   'primary': --primary,
   'on-primary': --on-primary,
+  'secondary': --secondary,
+  'on-secondary': --on-secondary,
+  'secondary-text': --secondary-text,
   'accent': --accent,
   'on-accent': --on-accent,
   'background-color': --background-color,
@@ -306,6 +323,10 @@ $colors: (
 
 .border-radius {
   border-radius: var(--border-radius) !important;
+}
+
+.border-radius2 {
+  border-radius: var(--border-radius2) !important;
 }
 
 .box-shadow {

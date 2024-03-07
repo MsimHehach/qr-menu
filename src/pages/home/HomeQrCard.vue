@@ -32,35 +32,34 @@
   </div>
 </template>
 <script lang="ts" setup>
-import * as qr from 'qr-ts'
-import { authentication } from 'src/models/authentication/authentication'
-import { watch, onMounted } from 'vue'
+// import { authentication } from 'src/models/authentication/authentication'
+// import { watch, onMounted } from 'vue'
 
-const createQrs = () => {
-  let code: HTMLCanvasElement | null = null
-  code = qr.renderOnCanvas(
-    qr.generate(String(authentication.user?.loyaltyCard?.card_number)),
-    'qrCode'
-  )
+// const createQrs = () => {
+//   let code: HTMLCanvasElement | null = null
+//   code = qr.renderOnCanvas(
+//     qr.generate(String(authentication.user?.loyaltyCard?.card_number)),
+//     'qrCode'
+//   )
 
-  const qrElement = document.getElementById('qrCode')
+//   const qrElement = document.getElementById('qrCode')
 
-  if (code && qrElement) {
-    code.style.height = '130px'
-    qrElement.replaceWith(code)
-  }
-}
+//   if (code && qrElement) {
+//     code.style.height = '130px'
+//     qrElement.replaceWith(code)
+//   }
+// }
 
-watch(
-  () => authentication.user,
-  (v) => {
-    if (v) {
-      createQrs()
-    }
-  }
-)
+// watch(
+//   () => authentication.user,
+//   (v) => {
+//     if (v) {
+//       createQrs()
+//     }
+//   }
+// )
 
-onMounted(() => {
-  createQrs()
-})
+// onMounted(() => {
+//   createQrs()
+// })
 </script>

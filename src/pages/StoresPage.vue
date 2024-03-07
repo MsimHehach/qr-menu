@@ -22,7 +22,7 @@
       class="mb-5"
     />
 
-    <div v-else style="font-weight: 400 !important" class="header2 mt-5">
+    <div v-else style="font-weight: 400 !important" class="header3 mt-5">
       {{ error ? 'Произошла ошибка' : 'Сейчас вы будете перенаправлены' }}
     </div>
     <CButton

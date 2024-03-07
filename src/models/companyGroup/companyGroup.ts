@@ -1,8 +1,10 @@
+import { ImageRaw } from './../image/image'
 import { SalesPointRaw } from './../salesPoint/salesPoint'
 import { Company, CompanyRaw } from './../company/company'
 import { BaseModel } from 'src/corexModels/apiModels/baseModel'
 import { Contact } from '../types'
 import { store } from '../store'
+import { Image } from '../image/image'
 
 export enum BankType {
   SBER = 'sber',
@@ -12,6 +14,15 @@ export enum BankType {
   PAYSELECTION = 'payselection',
   YOOKASSA = 'yookassa',
   PAYONLINE = 'payonline',
+}
+
+export type CityType = {
+  uuid: string
+  active: boolean
+  name: string | null
+  coords: number[]
+  created_at: string | null
+  updated_at: string | null
 }
 
 export type LegalEntityRaw = {
@@ -163,6 +174,11 @@ export type CompanyGroupRaw = {
   enable_order_sending: boolean
   companies: CompanyRaw[]
   contacts: Contact
+  image?: ImageRaw | null
+  city_data?: {
+    current: CityType | null
+    results: CityType[]
+  }
 }
 
 export class CompanyGroup implements BaseModel {
@@ -173,6 +189,11 @@ export class CompanyGroup implements BaseModel {
   enableOrderSending: boolean
   companies: Company[]
   contacts: Contact
+  image: Image | null
+  cityData: {
+    current: CityType | null
+    results: CityType[]
+  }
 
   constructor(raw: CompanyGroupRaw) {
     this.id = raw.uuid || ''
@@ -184,6 +205,11 @@ export class CompanyGroup implements BaseModel {
       ? raw.companies.map((v) => new Company(v))
       : []
     this.contacts = raw.contacts
+    this.image = raw.image ? new Image(raw.image) : null
+    this.cityData = raw.city_data || {
+      current: null,
+      results: [],
+    }
   }
 
   get currentCompany() {

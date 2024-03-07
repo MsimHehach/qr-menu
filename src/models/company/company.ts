@@ -11,6 +11,19 @@ export enum LinkType {
   OK = 'ok',
 }
 
+export enum AggregatorType {
+  YANDEX = 'yandex',
+  DELIVERY_CLUB = 'delivery_club',
+}
+
+export type DeliveryAggregatorRaw = {
+  active: boolean
+  company: string | null
+  link: string | null
+  name: string | null
+  type: AggregatorType
+}
+
 export type GuestContactRaw = {
   active: boolean
   messages: {
@@ -48,6 +61,9 @@ export type CompanyRaw = {
   sales_points?: SalesPointRaw[]
   visible: boolean
   image: ImageRaw | null
+  logo?: ImageRaw | null
+  description_image?: ImageRaw | null
+  header_image?: ImageRaw | null
   images?: ImageRaw[]
   settings: {
     uuid: string
@@ -67,6 +83,7 @@ export type CompanyRaw = {
   } | null
   guest_contacts: GuestContactRaw | null
   description?: string | null
+  delivery_aggregators: DeliveryAggregatorRaw[]
   created_at: string
   updated_at: string
 }
@@ -154,6 +171,9 @@ export class Company implements BaseModel {
   salesPoints?: SalesPoint[]
   visible: boolean
   image: Image | null
+  logo: Image | null
+  descriptionImage: Image | null
+  headerImage: Image | null
   images: Image[]
   settings: {
     uuid: string
@@ -175,7 +195,7 @@ export class Company implements BaseModel {
   description: string
   createdAt: string
   updatedAt: string
-
+  deliveryAggregators: DeliveryAggregatorRaw[]
   guestContacts: GuestContact
 
   constructor(raw: CompanyRaw) {
@@ -187,6 +207,11 @@ export class Company implements BaseModel {
     this.salesPoints = raw.sales_points?.map((v) => new SalesPoint(v)) || []
     this.visible = raw.visible
     this.image = raw.image ? new Image(raw.image) : null
+    this.logo = raw.logo ? new Image(raw.logo) : null
+    this.descriptionImage = raw.description_image
+      ? new Image(raw.description_image)
+      : null
+    this.headerImage = raw.header_image ? new Image(raw.header_image) : null
     this.images = raw.images ? raw.images.map((el) => new Image(el)) : []
     this.settings = raw.settings || {
       auto_upload_menu: false,
@@ -219,6 +244,7 @@ export class Company implements BaseModel {
         socials: [],
       }
     )
+    this.deliveryAggregators = raw.delivery_aggregators
   }
 
   toJson(): Record<string, any> {

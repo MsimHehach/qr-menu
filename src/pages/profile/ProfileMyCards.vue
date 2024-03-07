@@ -12,18 +12,18 @@
           <q-img
             v-if="el.type === CardType.VISA"
             width="34px"
-            src="~assets/visa.svg"
+            src="assets/visa.svg"
           />
           <q-img
             v-if="el.type === CardType.MASTERCARD"
             width="32px"
-            src="~assets/masterCard.svg"
+            src="assets/masterCard.svg"
           />
 
           <q-img
             v-if="el.type === CardType.MIR"
             width="32px"
-            src="~assets/mir.svg"
+            src="assets/mir.svg"
           />
 
           <div class="column gap-8">
@@ -37,7 +37,7 @@
         >
           <CIcon
             style="transform: translate(30%, 9%)"
-            name="fa-solid fa-xmark"
+            name="fa-regular fa-xmark"
             color="white"
           />
         </div>
@@ -105,7 +105,7 @@ const loadCards = async (page = 1, appendItems = false) => {
       page: page ? page : paymentCardRepo.pagination.page,
       appendItems: appendItems,
       pageSize: 'all',
-    }
+    },
   )
 }
 

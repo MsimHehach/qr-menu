@@ -21,7 +21,7 @@
         </template>
       </q-img>
       <div class="column gap-3">
-        <div class="header2">{{ authentication.user?.firstName }}</div>
+        <div class="header3">{{ authentication.user?.firstName }}</div>
         <div style="font-size: 13px">{{ authentication.user?.phone }}</div>
       </div>
     </div>

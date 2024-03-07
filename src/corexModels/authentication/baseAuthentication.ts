@@ -1,6 +1,4 @@
-import { companyGroupRepo } from './../../models/companyGroup/companyGroupRepo'
 import { authentication } from './../../models/authentication/authentication'
-import { companyRepo } from './../../models/company/companyRepo'
 import { Customer, CustomerRaw } from './../../models/customer/customer'
 import { api } from 'boot/axios'
 import { AxiosResponse } from 'axios'
@@ -44,16 +42,6 @@ export class BaseAuthentication {
     if (!this.tokens.accessIsValid) throw Error('Access token is not valid.')
     authentication.loading = true
     this.user = await this._loadUser()
-    if (companyGroupRepo.item) {
-      if (
-        companyGroupRepo.item &&
-        companyGroupRepo.item?.companies.length > 1
-      ) {
-      } else {
-        companyRepo.item = companyGroupRepo.item.companies[0]
-        companyRepo.cartCompany = companyGroupRepo.item.companies[0]
-      }
-    }
     authentication.loading = false
     return this.user
   }

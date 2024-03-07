@@ -52,7 +52,7 @@ export class MenuRepo extends BaseRepo<Menu> {
     const formData: FormData = new FormData()
     formData.append('image', image)
     formData.append('main_image', String(isMain))
-    return await this.api.setItemSizeImage(item.id, formData)
+    return await this.api.setItemSizeImage(item.id || '', formData)
   }
 
   async deleteItemSizeImage(item: ItemSize, image: Image) {

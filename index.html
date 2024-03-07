@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title></title>
+
+    <meta charset="utf-8" />
+    <meta content="" name="description" />
+    <meta content="telephone=no" name="format-detection" />
+    <meta content="no" name="msapplication-tap-highlight" />
+    <meta
+      content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width<% if (ctx.mode.cordova || ctx.mode.capacitor) { %>, viewport-fit=cover<% } %>"
+      name="viewport"
+    />
+    <script
+      src="https://kit.fontawesome.com/2cf356febd.js"
+      crossorigin="anonymous"
+    ></script>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&display=swap"
+      rel="stylesheet"
+    />
+
+    <link
+      href="icons/favicon-128x128.png"
+      rel="icon"
+      sizes="128x128"
+      type="image/png"
+    />
+    <link
+      href="icons/favicon-96x96.png"
+      rel="icon"
+      sizes="96x96"
+      type="image/png"
+    />
+    <link
+      href="icons/favicon-32x32.png"
+      rel="icon"
+      sizes="32x32"
+      type="image/png"
+    />
+    <link
+      href="icons/favicon-16x16.png"
+      rel="icon"
+      sizes="16x16"
+      type="image/png"
+    />
+    <link href="favicon.ico" rel="icon" type="image/ico" />
+    <!-- <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+    /> -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+      rel="stylesheet"
+    />
+    <!-- <link
+      href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+      rel="stylesheet"
+    /> -->
+    <link href="https://fonts.cdnfonts.com/css/gilroy-bold" rel="stylesheet" />
+
+    <!--    <script-->
+    <!--            crossorigin="anonymous"-->
+    <!--            src="https://kit.fontawesome.com/7725430c7f.js"-->
+    <!--    ></script>-->
+  </head>
+  <body>
+    <!-- quasar:entry-point -->
+
+
+    <script>
+      const group = ((location.search || '').split('?').find(v => v.startsWith('group=')) || '').replace('group=', '')
+      let query = ''
+      if (group) query = '?group=' + group
+      const siteName = localStorage.getItem('Website-Name')
+      document.title = siteName ? siteName.replaceAll('__q_strn|', '') : '<%= productName %>'
+      const backend = location.hostname === 'localhost' ? 'http://127.0.0.1:8000/api/v1' : '/api/v1'
+      fetch(backend + '/site_settings/site_data/' + query).then((response) => {
+        response.json().then(res => {
+          const title = res.title
+          if (title) document.title = title
+          const description = document.querySelector('meta[name~=\'description\']')
+          if (description) description.content = res.description || ''
+          localStorage.setItem('siteDataResponse', JSON.stringify(res))
+          window._metrikaKey = res.yandex_metrika_key
+        })
+      })
+      const setFavicons = (url) => {
+        let favicons = document.querySelectorAll('link[rel~=\'icon\']')
+        if (!favicons.length) {
+          const favicon = document.createElement('link')
+          favicon.rel = 'icon'
+          favicon.href = url
+          document.head.appendChild(favicon)
+        } else {
+          for (const el of favicons) {
+            el.href = url
+          }
+        }
+      }
+
+      const cachedFavicon = localStorage.getItem('faviconUrl')
+      if (cachedFavicon) setFavicons(cachedFavicon)
+
+      fetch(backend + '/site_settings/favicon/' + query).then(res => {
+        res.json().then(thumbUrl => {
+          setFavicons(thumbUrl)
+        })
+      })
+
+
+    </script>
+  </body>
+</html>

@@ -2,10 +2,10 @@ import { Notify } from 'quasar'
 
 Notify.setDefaults({
   position: 'bottom-right',
-  color: 'primary',
+  color: 'bottom-menu-color',
   timeout: 4000,
 
-  textColor: 'on-primary',
+  textColor: 'on-bottom-menu-color',
   multiLine: true,
   classes: 'c-notification notification-text',
   actions: [

@@ -3,7 +3,6 @@
     <div v-if="externalLabel" :class="'mb-4 helper-text bold'">
       {{ externalLabel }}
     </div>
-
     <q-select
       :class="{
         'select-border-rounded': rounded,
@@ -28,7 +27,7 @@
       :use-input="useInput"
       :rounded="rounded"
       :standout="standout"
-      :borderless="borderless"
+      :borderless="borderless || $uiSettings.item?.inputType === 'filled'"
       :input-debounce="inputDebounce || 300"
       :filled="filled"
       :dark="dark"
@@ -76,7 +75,6 @@
         </q-item>
         <q-separator divider-color color="secondary1 mx-10"></q-separator>
       </template>
-
       <template v-slot:before-options v-if="!!$slots['before-options']">
         <slot name="before-options"></slot>
       </template>
@@ -100,70 +98,70 @@
 </template>
 
 <script setup lang="ts">
-import CIconButton from '../buttons/CIconButton.vue';
-import { computed, ref } from 'vue';
-import { QSelect } from 'quasar';
-import { uiSettingsRepo } from 'src/models/uiSettings/uiSettingsRepo';
+import CIconButton from '../buttons/CIconButton.vue'
+import { computed, ref } from 'vue'
+import { QSelect } from 'quasar'
+import { uiSettingsRepo } from 'src/models/uiSettings/uiSettingsRepo'
 
-defineEmits(['update:modelValue', 'change', 'virtualScroll', 'click']);
+defineEmits(['update:modelValue', 'change', 'virtualScroll', 'click'])
 
 const props = defineProps<{
-  labelColor?: string;
-  modelValue?: any;
-  color?: string;
-  bgColor?: string;
-  dark?: boolean;
-  filled?: boolean;
-  borderless?: boolean;
-  standout?: boolean | string;
-  rounded?: boolean;
-  dense?: boolean;
-  inputClass?: object | string | any[];
-  inputStyle?: object | string | any[];
-  name?: string;
-  rules?: any[];
-  loading?: boolean;
-  fillInput?: boolean;
-  autoComplete?: string;
-  multiple?: boolean;
-  items?: any[];
-  itemLabel?: string | ((v: any) => any);
-  itemValue?: string | ((v: any) => any);
-  itemsDense?: boolean;
-  disabled?: boolean;
-  label?: string;
-  height?: string;
-  width?: string;
-  clearable?: boolean;
-  row?: boolean;
-  useInput?: boolean;
-  hideSelected?: boolean;
-  inputDebounce?: string | number;
-  emitValue?: boolean;
-  stackLabel?: boolean;
-  outlined?: boolean;
-  default?: boolean;
-  optionDisable?: string;
-  noIcon?: boolean;
-  filter?: (value: string) => void;
-  readonly?: boolean;
-  useRadio?: boolean;
-  useChips?: boolean;
-  externalLabel?: string;
-}>();
+  labelColor?: string
+  modelValue?: any
+  color?: string
+  bgColor?: string
+  dark?: boolean
+  filled?: boolean
+  borderless?: boolean
+  standout?: boolean | string
+  rounded?: boolean
+  dense?: boolean
+  inputClass?: object | string | any[]
+  inputStyle?: object | string | any[]
+  name?: string
+  rules?: any[]
+  loading?: boolean
+  fillInput?: boolean
+  autoComplete?: string
+  multiple?: boolean
+  items?: any[]
+  itemLabel?: string | ((v: any) => any)
+  itemValue?: string | ((v: any) => any)
+  itemsDense?: boolean
+  disabled?: boolean
+  label?: string
+  height?: string
+  width?: string
+  clearable?: boolean
+  row?: boolean
+  useInput?: boolean
+  hideSelected?: boolean
+  inputDebounce?: string | number
+  emitValue?: boolean
+  stackLabel?: boolean
+  outlined?: boolean
+  default?: boolean
+  optionDisable?: string
+  noIcon?: boolean
+  filter?: (value: string) => void
+  readonly?: boolean
+  useRadio?: boolean
+  useChips?: boolean
+  externalLabel?: string
+}>()
 
-const radioValue = ref<string>(props.modelValue as string);
+const radioValue = ref<string>(props.modelValue as string)
 
-const lastSearch = ref<string | null>(null);
+const lastSearch = ref<string | null>(null)
 
 const _outlined = computed(() => {
-  return props.outlined || uiSettingsRepo.item?.inputType === 'outlined';
-});
+  return props.outlined || uiSettingsRepo.item?.inputType === 'outlined'
+})
 
 const _bgColor = computed(() => {
-  if (props.bgColor) return props.bgColor;
-  else return 'input-color';
-});
+  if (props.bgColor) return props.bgColor
+  else return 'input-color'
+})
 
 const filterFn = (
   search: string,
@@ -171,17 +169,17 @@ const filterFn = (
 ) => {
   update(
     () => {
-      if (!props.filter) return;
-      if (search === lastSearch.value) return;
-      props.filter(search);
-      lastSearch.value = search;
+      if (!props.filter) return
+      if (search === lastSearch.value) return
+      props.filter(search)
+      lastSearch.value = search
     },
     (ref: QSelect) => {
-      ref.setOptionIndex(-1);
-      ref.moveOptionSelection(1, true);
+      ref.setOptionIndex(-1)
+      ref.moveOptionSelection(1, true)
     }
-  );
-};
+  )
+}
 </script>
 
 <style lang="scss">
@@ -197,9 +195,9 @@ const filterFn = (
   color: var(--on-input-color);
 }
 
-.q-select .q-field__native {
-  padding-left: 10px;
-}
+// .q-select .q-field__native {
+//   padding-left: 10px;
+// }
 
 .q-select:not(.q-file).q-field--float .q-field__label {
   transform: translate(0, -50%) scale(0.85) !important;

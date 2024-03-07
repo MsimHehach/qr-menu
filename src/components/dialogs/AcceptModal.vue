@@ -2,20 +2,28 @@
   <CDialog
     :model-value="modelValue"
     @update:model-value="$emit('update:modelValue', $event)"
-    width="322px"
+    width="422px"
   >
     <div class="header3 text-center mb-10 px-10 text-on-background-color">
-      Вы подтверждаете действие?
+      {{ text || 'Вы подтверждаете действие?' }}
     </div>
-    <div class="row gap-10 flex-center">
+    <div class="row gap-sm-10 gap-xs-5 flex-center">
       <CButton
         label="Отменить"
+        :height="$q.screen.md ? '44px' : $q.screen.lt.md ? '40px' : '48px'"
+        class="body"
         @click="$emit('update:modelValue', false)"
         color="secondary-button-color"
         text-color="on-secondary-button-color"
-        width="46%"
+        :width="$q.screen.xs ? '100%' : '46%'"
       />
-      <CButton label="Подтвердить" @click="acceptHandler" width="46%" />
+      <CButton
+        class="body"
+        label="Подтвердить"
+        :height="$q.screen.md ? '44px' : $q.screen.lt.md ? '40px' : '48px'"
+        @click="acceptHandler"
+        :width="$q.screen.xs ? '100%' : '46%'"
+      />
     </div>
   </CDialog>
 </template>
@@ -25,6 +33,7 @@ import CDialog from '../template/dialogs/CDialog.vue'
 
 defineProps<{
   modelValue: boolean
+  text?: string
 }>()
 
 const emit = defineEmits<{

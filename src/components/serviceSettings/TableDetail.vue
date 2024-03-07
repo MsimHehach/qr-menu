@@ -1,52 +1,57 @@
 <template>
-  <div class="pa-10">
-    <div class="header2">Стол: {{ table.number }}</div>
+  <div
+    style="max-width: 590px"
+    class="bg-background-color text-on-background-color"
+  >
     <SwiperContainer
       v-if="table.images.length"
-      class="mt-15"
-      :slides-per-view="1.2"
+      :slides-per-view="2"
       :items="table.images"
     >
       <template v-slot:item="{ item }">
         <div
-          style="overflow: overlay; height: 202px"
+          style="overflow: overlay; height: 167px"
           class="offer-block border-radius column no-wrap"
         >
-          <q-img
-            :src="item.image || $store.images.empty"
-            style="border-radius: 10px 10px 0 0"
-            fit="cover"
-          />
+          <q-img :src="item.image || $store.images.empty" fit="cover">
+            <template v-slot:error>
+              <q-img :src="$store.images.empty" fit="cover" />
+            </template>
+          </q-img>
         </div> </template
     ></SwiperContainer>
-    <div class="body mt-15" v-if="table.description">
+    <div class="subtitle-text mt-10 bold">Стол № {{ table.number }}</div>
+
+    <div class="body mt-8" v-if="table.description">
       {{ table.description }}
     </div>
-    <div
-      class="mt-15 px-5 py-6 column gap-5 full-width border-radius box-shadow bg-backing-color"
-    >
+    <div class="mt-10 column body gap-5 full-width border-radius">
       <div
         v-for="(field, index) in infoFields"
         :key="index"
         class="row full-width items-center no-wrap justify-between"
       >
-        <div class="row gap-3 no-wrap items-center">
-          <div class="bg-white-opacity border-radius box-shadow px-5 py-4">
+        <div class="row gap-8 no-wrap items-center">
+          <div class="bg-primary border-radius px-5 py-4">
             <CIcon
+              size="19px"
               :name="field.icon"
-              :color="field.color || 'on-backing-color'"
+              :color="field.color || 'on-primary'"
             />
           </div>
           <div
             :class="
-              field.color ? `text-${field.color}` : 'text-on-backing-color'
+              field.color ? `text-${field.color}` : 'text-on-background-color'
             "
           >
             {{ field.label }}
           </div>
         </div>
         <div
-          :class="field.color ? `text-${field.color}` : 'text-on-backing-color'"
+          :class="
+            field.color ? `text-${field.color}` : 'text-on-background-color'
+          "
+          style="opacity: 0.7"
         >
           {{ field.value }}
         </div>
@@ -54,6 +59,7 @@
     </div>
     <div class="row mt-15 full-width justify-center">
       <CButton
+        class="body"
         @click="$emit('confirmSelection')"
         label="Выбрать"
         width="280px"
@@ -62,30 +68,30 @@
   </div>
 </template>
 <script lang="ts" setup>
-import SwiperContainer from 'src/layouts/containers/SwiperContainer.vue';
-import { TableRaw } from 'src/models/sections/tables/table';
-import CIcon from '../template/helpers/CIcon.vue';
-import CButton from '../template/buttons/CButton.vue';
+import SwiperContainer from 'src/layouts/containers/SwiperContainer.vue'
+import { TableRaw } from 'src/models/sections/tables/table'
+import CIcon from '../template/helpers/CIcon.vue'
+import CButton from '../template/buttons/CButton.vue'
 
 const props = defineProps<{
-  table: TableRaw;
-}>();
+  table: TableRaw
+}>()
 
 defineEmits<{
-  (evt: 'update:modelValue', value: boolean): void;
-  (evt: 'confirmSelection'): void;
-}>();
+  (evt: 'update:modelValue', value: boolean): void
+  (evt: 'confirmSelection'): void
+}>()
 
 const infoFields = [
   {
-    icon: 'fa-light fa-user',
-    label: 'Минимальная вместимость',
+    icon: 'fa-regular fa-user',
+    label: 'Мин. вместимость',
     value: props.table.min_capacity + ' чел.',
     color: undefined,
   },
   {
-    icon: 'fa-light fa-users',
-    label: 'Максимальная вместимость',
+    icon: 'fa-regular fa-users',
+    label: 'Макс. вместимость',
     value: props.table.capacity + ' чел.',
     color: undefined,
   },
@@ -105,5 +111,5 @@ const infoFields = [
   //   value: '-',
   //   color: 'red',
   // },
-];
+]
 </script>

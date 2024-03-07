@@ -4,6 +4,7 @@
       { 'menu-mode': menuMode },
       { 'rounded-text-area': $props.default && textArea },
     ]"
+    :style="$q.platform.is.safari ? `--input-height: ${_height}` : ''"
   >
     <div
       v-if="externalLabel"
@@ -11,72 +12,68 @@
         externalLabelClass
           ? externalLabelClass
           : _rounded
-          ? 'mb-4 secondary-text ml-6'
-          : 'mb-4 secondary-text',
-        { 'readonly-label': readonly },
+          ? 'mb-2 helper-text ml-6'
+          : 'mb-2 helper-text',
       ]"
       class="bold"
     >
       {{ externalLabel }}
     </div>
     <q-input
-      @update:model-value="updateModelValue"
-      :modelValue="
-        props.customFormattedValue !== undefined && !focused && mounted
-          ? customFormattedValue
-          : formattedValue
-      "
-      @keyup.enter.prevent="$emit('enter')"
-      @blur="_blurInput"
-      @keydown.right="emitDirectionKeys('right', $event)"
-      @keydown.left="emitDirectionKeys('left', $event)"
-      @keydown.up.prevent="$emit('up')"
-      @keydown.down.prevent="$emit('down')"
-      @focus="_focusInput"
       ref="inputRef"
-      :readonly="readonly"
-      :color="_color"
-      :label-color="labelColor"
-      :standout="_standout"
-      :label="label"
-      :type="_type"
-      :hint="hint"
-      :mask="mask"
-      :rules="rules"
-      :fill-mask="fillMask"
-      :clearable="clearable"
-      :borderless="changeAmount || borderless"
-      :filled="
-        changeAmount || filled !== undefined
-          ? filled
-          : $uiSettings.item?.inputType === 'filled'
-      "
-      :loading="loading"
-      :outlined="
-        changeAmount
-          ? false
-          : outlined || $uiSettings.item?.inputType === 'outlined'
-      "
-      :dense="dense"
-      :input-style="inputStyle"
-      :input-class="inputClass ? inputClass : 'text-on-input-color'"
-      :placeholder="placeholder"
-      :rounded="_rounded"
-      :bg-color="_bgColor"
+      :autocomplete="autocomplete"
       :autogrow="autoGrow"
-      :disabled="_disabled"
-      :disable="_disabled"
-      :style="`width:${width || 'unset'}; height:${_height};`"
+      :bg-color="_bgColor"
+      :borderless="changeAmount || borderless"
       :class="{
         'label-top': _labelTop,
         'no-icon': _noIcon,
         'default-input': !changeAmount,
       }"
-      :unmasked-value="unmaskedValue"
+      :clearable="clearable"
+      :color="_color"
+      :dense="dense"
+      :disable="_disabled"
+      :disabled="_disabled"
+      :fill-mask="fillMask"
+      :filled="changeAmount ? false : $uiSettings.item?.inputType === 'filled'"
+      :hint="hint"
+      :input-class="inputClass ? inputClass : 'text-on-input-color body'"
+      :input-style="inputStyle"
+      :label="label"
+      :label-color="labelColor"
+      :loading="loading"
+      :mask="mask"
+      :modelValue="
+        props.customFormattedValue !== undefined && !focused && mounted
+          ? customFormattedValue
+          : formattedValue
+      "
+      :outlined="
+        changeAmount
+          ? false
+          : outlined || $uiSettings.item?.inputType === 'outlined'
+      "
+      :placeholder="placeholder"
+      :readonly="readonly"
+      :rounded="_rounded"
+      :rules="rules"
       :square="square ? true : false"
-      :autocomplete="autocomplete"
+      :standout="_standout"
+      :style="`width:${width || 'unset'}; height:${_height};`"
+      :type="_type"
+      :unmasked-value="unmaskedValue"
+      class="circlized"
+      @blur="_blurInput"
+      @focus="_focusInput"
+      @update:model-value="updateModelValue"
+      @keyup.enter.prevent="$emit('enter')"
+      @keydown.right="emitDirectionKeys('right', $event)"
+      @keydown.left="emitDirectionKeys('left', $event)"
+      @keydown.up.prevent="$emit('up')"
+      @keydown.down.prevent="$emit('down')"
     >
-      <template v-slot:prepend v-if="$slots.prepend">
+      <template v-if="$slots.prepend" v-slot:prepend>
         <slot name="prepend"></slot>
         <q-icon
           v-if="leftIcon"
@@ -106,14 +103,13 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import { QInput, ValidationRule } from 'quasar'
-import { computed, ref, watchEffect, onMounted } from 'vue'
-import { QInputProps } from 'quasar'
+<script lang="ts" setup>
+import { QInput, QInputProps, ValidationRule } from 'quasar'
+import { computed, onMounted, ref, watchEffect } from 'vue'
 import {
-  useCurrencyInput,
-  CurrencyInputOptions,
   CurrencyDisplay,
+  CurrencyInputOptions,
+  useCurrencyInput,
 } from 'vue-currency-input'
 
 const emit = defineEmits([
@@ -209,7 +205,7 @@ const _blurInput = () => {
 
 const _color = computed(() => {
   if (props.color) return props.color
-  else return 'input-color'
+  else return 'primary'
 })
 
 const _rounded = computed(() => {
@@ -303,13 +299,27 @@ watchEffect(() => {
 </script>
 
 <style lang="scss">
-.readonly-label {
-  opacity: 0.5;
-}
+// .readonly-label {
+//   opacity: 0.5;
+// }
 
 body.screen--sm {
   .q-field {
     max-width: unset !important;
+  }
+
+  .q-field {
+    textarea::placeholder {
+      font-size: 14px !important;
+    }
+  }
+}
+
+body.screen--xs {
+  .q-field {
+    textarea::placeholder {
+      font-size: 14px !important;
+    }
   }
 }
 
@@ -343,6 +353,11 @@ textarea + .q-field__label {
   padding-left: 8px;
 }
 
+.q-input .q-field__bottom {
+  padding: 4px 12px !important;
+  font-size: 14px;
+}
+
 .q-input:not(.q-file).q-field--with-bottom {
   padding-bottom: 0px !important;
 }
@@ -355,13 +370,30 @@ textarea + .q-field__label {
   display: none;
 }
 
-.default-input .q-field__control {
-  border-radius: var(--border-radius) !important;
+.circlized .q-field__control {
+  border-radius: var(--border-radius2) !important;
+}
+
+.default-input ::placeholder {
+  font: var(--header3);
 }
 
 .q-field--outlined .bg-black2.q-field__control:before {
   border: 1px solid $black2 !important;
 }
+
+.q-textarea .q-field__control {
+  min-height: unset !important;
+}
+
+.q-textarea .q-field__native {
+  padding-top: 10px !important;
+  padding-bottom: 10px !important;
+}
+
+// .q-input :deep(.q-field__native .q-placeholder) {
+//   padding-top: 10px !important;
+// }
 
 .q-field__native .q-placeholder {
   padding: 10px;
@@ -371,11 +403,25 @@ textarea + .q-field__label {
   color: var(--on-input-color) !important;
 }
 
-.default-input .q-field__control {
-  padding: 0 5px 0 10px;
-}
+// .default-input .q-field__control {
+//   padding: 0 5px 0 10px;
+// }
 
 .rounded-text-area .q-field__control {
   border-radius: 15px !important;
+}
+
+.q-field--filled .q-field__control:after {
+  display: none;
+}
+
+.q-field--filled .q-field__control:before {
+  display: none;
+}
+
+body.safari {
+  .q-field--outlined .q-field__control:after {
+    height: var(--input-height) !important;
+  }
 }
 </style>

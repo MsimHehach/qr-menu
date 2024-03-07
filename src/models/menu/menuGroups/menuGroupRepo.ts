@@ -5,7 +5,8 @@ import { reactive } from 'vue'
 import { Image, ImageRaw } from 'src/models/image/image'
 
 export class MenuGroupRepo extends BaseRepo<MenuGroup> {
-  elementInViewport: string | null = null
+  elementsInViewport: string[] = []
+  scrollingToGroup = false
   api = menuGroupApi
 
   async setImage(

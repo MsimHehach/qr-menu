@@ -40,30 +40,38 @@
   min-width: 200px;
   max-width: 240px;
   padding: 7px 7px 7px 15px !important;
+
   .q-btn {
     min-height: unset !important;
+
     .q-btn__content {
       flex: 0 !important;
     }
   }
+
   .q-btn:not(.absolute-top-right) {
     margin-top: 10px;
   }
+
   .q-notification__wrapper {
     height: unset;
     padding-top: 15px;
     padding-bottom: 15px;
   }
+
   .q-notification__message {
     margin-right: 26px;
     padding: 0 !important;
   }
+
   .absolute-top-right .q-btn__content {
     flex: 0 !important;
   }
+
   .q-btn {
     padding: 0 !important;
     text-transform: unset !important;
+
     .q-btn__content {
       i {
         order: 1;
@@ -74,6 +82,7 @@
       }
     }
   }
+
   .q-notification__actions {
     justify-content: flex-start !important;
   }
@@ -83,18 +92,20 @@
   display: none !important;
 }
 
-.mx-datepicker-popup {
-  z-index: 99999999999999;
-}
-
 .c-container {
-  max-width: 1420px;
+  max-width: 1290px;
   width: 100%;
   margin: 0 auto;
 }
 
 .q-footer {
   z-index: 50 !important;
+}
+
+.maximize-modal {
+  .q-dialog__inner--minimized {
+    padding: 0px !important;
+  }
 }
 
 .no-scrollbar::-webkit-scrollbar {
@@ -147,11 +158,22 @@
   height: unset !important;
 }
 
-.q-field {
-  .q-field__control {
-    height: -webkit-fill-available !important;
+body:not(.safari) {
+  .q-field {
+    .q-field__control {
+      height: -webkit-fill-available !important;
+    }
   }
 }
+
+.change-amount {
+  .q-field {
+    .q-field__control {
+      height: -webkit-fill-available !important;
+    }
+  }
+}
+
 .q-field--outlined .q-field__control:before,
 .q-editor {
   border: 1px solid $gray-light;
@@ -186,4 +208,13 @@ li {
 
 .q-menu {
   border-radius: var(--border-radius);
+}
+
+.marker-shadow .leaflet-marker-icon {
+  width: 37px !important;
+  height: 37px !important;
+  -webkit-box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.5);
+  border-radius: 10px;
+  animation: pulse 2s ease 3 normal, size 1s linear 1 alternate;
 }

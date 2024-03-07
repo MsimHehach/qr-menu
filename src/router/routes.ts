@@ -7,7 +7,7 @@ const routes: RouteRecordRaw[] = [
     component: () => import('src/pages/SuccessfulPayment.vue'),
   },
   {
-    path: '/:companyGroup/',
+    path: '/',
     component: () => import('src/layouts/MainLayout.vue'),
     children: [
       {
@@ -18,6 +18,9 @@ const routes: RouteRecordRaw[] = [
       {
         path: 'profile',
         name: 'profilePage',
+        redirect: {
+          name: 'profileData',
+        },
         children: [
           {
             path: 'data',
@@ -30,29 +33,24 @@ const routes: RouteRecordRaw[] = [
             component: () =>
               import('src/pages/profile/ProfileOrdersHistory.vue'),
           },
-          {
-            path: 'cards',
-            name: 'profileCards',
-            component: () => import('src/pages/profile/ProfileMyCards.vue'),
-          },
+          // {
+          //   path: 'cards',
+          //   name: 'profileCards',
+          //   component: () => import('src/pages/profile/ProfileMyCards.vue'),
+          // },
           {
             path: 'addresses',
             name: 'profileAddresses',
             component: () =>
               import('src/pages/profile/ProfileDeliveryAddresses.vue'),
           },
-          {
-            path: 'about',
-            name: 'aboutUs',
-            component: () => import('src/pages/profile/ProfileAboutUs.vue'),
-          },
         ],
         component: () => import('src/pages/profile/ProfilePage.vue'),
       },
       {
-        path: '',
-        name: 'testPage',
-        component: () => import('pages/IndexPage.vue'),
+        path: 'about',
+        name: 'aboutUs',
+        component: () => import('src/pages/profile/ProfileAboutUs.vue'),
       },
       {
         path: 'menu',
@@ -84,7 +82,60 @@ const routes: RouteRecordRaw[] = [
         name: 'myQrPage',
         component: () => import('src/pages/loyaltyCard/LoyaltyCardMyQr.vue'),
       },
+      {
+        path: 'arrangement',
+        name: 'arrangementPage',
+        component: () => import('src/pages/arrangement/ArrangementPage.vue'),
+        redirect: {
+          name: 'orderingPage',
+        },
+        children: [
+          {
+            path: 'ordering',
+            name: 'orderingPage',
+            component: () =>
+              import('src/pages/arrangement/ArrangementOrdering.vue'),
+          },
+          {
+            path: 'success_order/:orderId',
+            name: 'successOrderPage',
+            component: () =>
+              import('src/pages/arrangement/ArrangementSuccess.vue'),
+          },
+        ],
+      },
     ],
+  },
+  {
+    path: '/:companyGroup/qr_menu/:padId',
+    component: () => import('src/layouts/MainLayout.vue'),
+    children: [
+      {
+        path: '',
+        name: 'qrHome',
+        component: () => import('src/pages/qrMenu/home/QRHome.vue'),
+      },
+      {
+        path: 'menu_item/:menuItemId',
+        name: 'qrMenuItemPage',
+        component: () => import('src/pages/menuItem/MenuItemPage.vue'),
+      },
+      {
+        path: 'current_order',
+        name: 'currentOrderPage',
+        component: () => import('src/pages/qrMenu/order/QRCurrentOrder.vue'),
+      },
+      {
+        path: 'order_review',
+        name: 'orderReviewPage',
+        component: () => import('src/pages/qrMenu/order/QROrderReview.vue'),
+      },
+    ],
+  },
+  {
+    path: '/:companyGroup/delete_account',
+    name: 'deleteAccountPage',
+    component: () => import('src/pages/auth/DeleteAccountPage.vue'),
   },
   {
     path: '/qr_data/:topologyItemId',
@@ -116,6 +167,11 @@ const routes: RouteRecordRaw[] = [
     path: '/:externalId/terms_of_use',
     name: 'termsOfServicePage',
     component: () => import('pages/TermsOfUse.vue'),
+  },
+  {
+    path: '/:externalId/offer',
+    name: 'offerPage',
+    component: () => import('pages/Offer.vue'),
   },
   {
     path: '/:catchAll(.*)*',

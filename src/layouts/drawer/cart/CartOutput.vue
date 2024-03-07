@@ -13,7 +13,7 @@
     </div>
 
     <div class="column">
-      <div class="header2 mb-10">Итого</div>
+      <div class="header3 mb-10">Итого</div>
 
       <div class="box-shadow border-radius py-6 px-5 column gap-7">
         <div
@@ -87,6 +87,7 @@
         ></q-menu>
       </CInput> -->
       <TimePicker
+        v-if="!$store.tableMode"
         label="Время доставки"
         :options="options"
         @update-time="setDeliveryTime($event)"
@@ -103,8 +104,19 @@
           :model-value="currentDay"
       /></TimePicker>
 
-      <div v-if="showPaymentTypes" class="row full-width gap-8 mt-15">
-        <div
+      <div
+        v-if="showPaymentTypes || $store.tableMode"
+        class="row full-width mt-15 text-on-background-color"
+      >
+        <CSelect
+          class="full-width"
+          external-label="Способ оплаты"
+          :items="paymentTypes"
+          :height="$q.screen.lt.md ? '35px' : '50px'"
+          v-model="selectedPaymentType"
+          @update:model-value="$emit('paymentSelected', $event.type)"
+        />
+        <!-- <div
           v-for="(type, index) in paymentTypes"
           :key="index"
           @click="$emit('paymentSelected', type.type)"
@@ -136,7 +148,7 @@
             color="primary"
             size="50%"
           />
-        </div>
+        </div> -->
       </div>
     </div>
   </div>
@@ -158,6 +170,8 @@ import WalletSlider from './WalletSlider.vue'
 import { WalletPaymentRaw } from 'src/models/carts/cart'
 import { PromoCodeMode } from 'src/models/salesPoint/salesPoint'
 import TimePicker from 'src/components/inputs/TimePicker.vue'
+import { store } from 'src/models/store'
+import CSelect from 'src/components/template/inputs/CSelect.vue'
 
 defineProps<{
   showPaymentTypes: boolean
@@ -170,6 +184,8 @@ defineEmits<{
 const currentDay = ref('Сегодня')
 
 const deliveryTyme = ref<string | null>(null)
+
+const selectedPaymentType = ref<string | null>(null)
 
 const promocode = ref<string | null>(null)
 
@@ -191,27 +207,44 @@ watch(
 
 const paymentTypes = computed(() => {
   const result = []
-  if (cartRepo.item?.salesPoint.paymentSettings.cash_enabled)
+  if (store.tableMode) {
     result.push({
-      label: 'Наличными при получении',
-      type: PaymentType.CASH,
+      label: 'Внести в счет',
+      type: PaymentType.PAY_LATER,
       class: 'bg-cash-button-color text-on-cash-button-color',
       icon: 'fa-light fa-money-bill',
     })
-  if (cartRepo.item?.salesPoint.paymentSettings.card_enabled)
-    result.push({
-      label: 'Картой при получении',
-      type: PaymentType.CARD,
-      class: 'bg-card-button-color text-on-card-button-color',
-      icon: 'fa-light fa-credit-card',
-    })
-  if (cartRepo.item?.salesPoint.paymentSettings.online_payment_enabled)
-    result.push({
-      label: 'Онлайн',
-      type: PaymentType.ONLINE,
-      class: 'bg-online-button-color text-on-online-button-color',
-      icon: 'fa-light fa-dollar',
-    })
+    if (cartRepo.item?.salesPoint.paymentSettings.online_payment_enabled) {
+      result.push({
+        label: 'Онлайн',
+        type: PaymentType.ONLINE,
+        class: 'bg-cash-button-color text-on-cash-button-color',
+        icon: 'fa-light fa-money-bill',
+      })
+    }
+  } else {
+    if (cartRepo.item?.salesPoint.paymentSettings.cash_enabled)
+      result.push({
+        label: 'Наличными при получении',
+        type: PaymentType.CASH,
+        class: 'bg-cash-button-color text-on-cash-button-color',
+        icon: 'fa-light fa-money-bill',
+      })
+    if (cartRepo.item?.salesPoint.paymentSettings.card_enabled)
+      result.push({
+        label: 'Картой при получении',
+        type: PaymentType.CARD,
+        class: 'bg-card-button-color text-on-card-button-color',
+        icon: 'fa-light fa-credit-card',
+      })
+    if (cartRepo.item?.salesPoint.paymentSettings.online_payment_enabled)
+      result.push({
+        label: 'Онлайн',
+        type: PaymentType.ONLINE,
+        class: 'bg-online-button-color text-on-online-button-color',
+        icon: 'fa-light fa-dollar',
+      })
+  }
   return result
 })
 
@@ -220,21 +253,15 @@ const usedPoints = computed(() => {
 })
 
 const resultRows = computed(() => {
-  return [
+  const res: {
+    label: string
+    icon: string
+    value: any
+  }[] = [
     {
       label: 'Сумма заказа',
       icon: 'fa-light fa-user',
-      value: cartRepo.item?.discountedSum,
-    },
-    {
-      label: 'Списать баллов',
-      icon: 'fa-light fa-piggy-bank',
-      value: usedPoints.value ? '—' + usedPoints.value : 0,
-    },
-    {
-      label: 'Доставка',
-      icon: 'fa-light fa-truck',
-      value: cartRepo.item?.deliveryPrice,
+      value: cartRepo.item?.discountedSum.toFixed(2),
     },
     {
       label: 'К оплате',
@@ -242,6 +269,21 @@ const resultRows = computed(() => {
       value: cartRepo.item?.discountedTotalSum.toFixed(2),
     },
   ]
+  if (!store.tableMode) {
+    if (cartRepo.item?.walletPayments.length) {
+      res.splice(res.length, 0, {
+        label: 'Списать баллов',
+        icon: 'fa-light fa-piggy-bank',
+        value: usedPoints.value ? '—' + usedPoints.value : 0,
+      })
+    }
+    res.splice(res.length, 0, {
+      label: 'Доставка',
+      icon: 'fa-light fa-truck',
+      value: cartRepo.item?.deliveryPrice,
+    })
+  }
+  return res
 })
 
 const options = computed(() => {
@@ -325,7 +367,7 @@ const setDeliveryTime = (v: string | null) => {
   const today = moment().format('DD.MM.YYYY')
   const tomorrow = moment().add(1, 'day').format('DD.MM.YYYY')
   if (v === 'error') {
-    cartRepo.item.deliveryTime = 'Не указано'
+    cartRepo.item.deliveryTime = null
   } else {
     if (currentDay.value === 'Сегодня') {
       cartRepo.item.deliveryTime = [today, v].join(' ')

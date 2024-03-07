@@ -7,6 +7,7 @@ import { BaseModel } from 'src/corexModels/apiModels/baseModel'
 import { CartItem, CartItemRaw } from './cartItem/cartItem'
 import moment from 'moment'
 import { WalletRaw } from '../customer/customer'
+import { sum } from 'lodash'
 
 export enum CartType {
   PICKUP = 'pickup',
@@ -28,13 +29,13 @@ export type AvailableHours = {
     {
       start: string
       end: string
-    }
+    },
   ]
   tomorrow: [
     {
       start: string
       end: string
-    }
+    },
   ]
 }
 
@@ -42,12 +43,13 @@ export type CartParams = {
   sales_point?: string
   type?: string
   delivery_address?: string
-  delivery_time?: string
+  delivery_time?: string | null
   promo_code?: string
   applied_wallet_payments?: {
     wallet_payment: string
     applied_sum: number
   }[]
+  comment?: string | null
 }
 
 export type CartRaw = {
@@ -76,6 +78,10 @@ export type CartRaw = {
   current_delivery_settings: string | null
   delivery_price: number
   wallet_payments: WalletPaymentRaw[]
+  errors: {
+    description: string | null
+    title: string | null
+  }[]
 }
 
 export class Cart implements BaseModel {
@@ -98,6 +104,10 @@ export class Cart implements BaseModel {
   cartItems: CartItem[]
   deliveryPrice: number
   walletPayments: WalletPaymentRaw[]
+  errors: {
+    description: string | null
+    title: string | null
+  }[]
 
   constructor(raw: CartRaw) {
     this.id = raw.uuid
@@ -126,6 +136,27 @@ export class Cart implements BaseModel {
     this.cartItems = raw.cart_items.map((item) => new CartItem(item))
     this.deliveryPrice = raw.delivery_price
     this.walletPayments = raw.wallet_payments
+    this.errors = raw.errors
+  }
+
+  get cartItemsQuantitySum() {
+    return sum(
+      this.cartItems.filter((el) => !el.attachedTo).map((v) => v.quantity),
+    )
+  }
+
+  get currentAddress() {
+    return this.type === 'delivery'
+      ? this.deliveryAddress?.name
+      : this.salesPoint.customAddress || this.salesPoint.address
+  }
+
+  get currentDeliveryType() {
+    return this.type === 'pickup'
+      ? 'Самовывоз'
+      : this.type === 'delivery'
+        ? 'Доставка'
+        : 'Бронь'
   }
 
   toJson(): Record<string, any> {

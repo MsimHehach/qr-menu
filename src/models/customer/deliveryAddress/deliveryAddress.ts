@@ -5,15 +5,18 @@ export type DeliveryAddressRaw = {
   customer?: string
   name: string | null
   address: string | null
-  coords: number[]
+  coords: {
+    latitude: number | null
+    longitude: number | null
+  } | null
   city: string | null
   street: string | null
   house: string | null
   flat: string | null
-  floor: string | null
-  entrance: string | null
-  intercom: string | null
-  description: string | null
+  floor: string | number | null
+  entrance?: string | null
+  intercom?: string | null
+  description?: string | null
 }
 
 export class DeliveryAddress implements BaseModel {
@@ -21,12 +24,15 @@ export class DeliveryAddress implements BaseModel {
   customer: string
   name: string | null
   address: string
-  coords: number[]
+  coords: {
+    latitude: number | null
+    longitude: number | null
+  } | null
   city: string | null
   street: string | null
   house: string | null
   flat: string | null
-  floor: string | null
+  floor: string | number | null
   entrance: string | null
   intercom: string | null
   description: string | null
@@ -42,9 +48,9 @@ export class DeliveryAddress implements BaseModel {
     this.house = raw.house
     this.flat = raw.flat
     this.floor = raw.floor
-    this.entrance = raw.entrance
-    this.intercom = raw.intercom
-    this.description = raw.description
+    this.entrance = raw.entrance || null
+    this.intercom = raw.intercom || null
+    this.description = raw.description || null
   }
 
   toJson(): Record<string, any> {
@@ -59,7 +65,7 @@ export class DeliveryAddress implements BaseModel {
       flat: this.flat,
       floor: this.floor,
       entrance: this.entrance,
-      intercom: this.intercom?.length ? this.intercom : undefined,
+      intercom: this.intercom?.length ? this.intercom : null,
       description: this.description?.length ? this.description : undefined,
     }
   }

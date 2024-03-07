@@ -2,29 +2,22 @@
   <CDialog
     :model-value="modelValue"
     @update:model-value="$emit('update:modelValue', $event)"
-    width="456px"
+    width="1094px"
+    no-padding
+    :position="$q.screen.lt.md ? 'bottom' : undefined"
+    :maximize="$q.screen.lt.md"
+    :height="$q.screen.lt.md ? '100%' : undefined"
   >
-    <template v-slot:header>
-      <div class="row justify-between full-width items-center">
-        {{ address ? 'Изменить адрес' : 'Создать адреса' }}
-        <div
-          style="width: 36px; height: 36px"
-          class="bg-white-opacity row justify-center items-center border-radius box-shadow"
-        >
-          <CIcon
-            name="fa-light fa-location-dot"
-            color="on-secondary-button-color"
-          />
-        </div>
-      </div>
-    </template>
-    <CreateDeliveryAddress :address="address" @create="$emit('create')" />
+    <CreateDeliveryAddress
+      :back-callback="() => $emit('update:modelValue', false)"
+      :address="address"
+      @updated="$emit('create')"
+    />
   </CDialog>
 </template>
 <script lang="ts" setup>
 import CreateDeliveryAddress from 'src/components/serviceSettings/CreateDeliveryAddress.vue'
 import CDialog from 'src/components/template/dialogs/CDialog.vue'
-import CIcon from 'src/components/template/helpers/CIcon.vue'
 import { DeliveryAddress } from 'src/models/customer/deliveryAddress/deliveryAddress'
 
 defineProps<{

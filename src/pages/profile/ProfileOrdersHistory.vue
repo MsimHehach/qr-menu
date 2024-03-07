@@ -1,24 +1,28 @@
 <template>
-  <div class="full-width">
-    <div class="row items-center gap-4 body">
+  <div
+    :style="`max-width: ${$q.screen.lt.lg ? '' : '628px'}`"
+    class="column full-width text-on-background-color"
+  >
+    <div class="header3 bold mb-15">История заказов</div>
+    <div
+      class="row items-center full-width gap-4 body no-wrap pt-1 pb-2 pr-1"
+      style="overflow-x: auto"
+    >
       <div
         v-for="(el, index) in orderTypes"
         :key="index"
         @click="changeOrdersFilterType(el.val)"
         :class="
           el.val === currentType
-            ? 'bg-primary text-on-primary border-radius'
-            : 'text-on-background-color'
+            ? 'bg-secondary text-on-secondary bold'
+            : 'text-on-background-color bordered-type'
         "
-        class="cursor-pointer px-6 py-3"
+        class="cursor-pointer px-10 body py-6 border-radius2"
       >
         {{ el.label }}
       </div>
     </div>
-    <div
-      class="column mt-15 gap-10"
-      :style="$q.screen.xs ? '' : 'max-width: 550px'"
-    >
+    <div class="column mt-15 gap-10 full-width">
       <template v-if="$order.items.length">
         <ProfileOrderRow
           v-for="(order, index) in $order.items"
@@ -29,13 +33,13 @@
       <div
         v-else
         :style="$q.screen.xs ? '' : 'width: 416px'"
-        style="min-height: 200px"
-        class="bg-backing-color text-on-backing-color border-radius box-shadow column justify-center items-center gap-10"
+        style="min-height: 180px"
+        class="text-on-background-color border-radius bordered-type column justify-center items-center gap-5"
       >
         <CIcon
-          color="on-backing-color"
-          name="fa-thin fa-money-check"
-          size="75px"
+          color="on-on-background-color"
+          name="fa-light fa-money-check"
+          size="60px"
         />
         <div class="header3">У вас нет ни одного заказа</div>
       </div>
@@ -49,13 +53,6 @@
       :last-page="$order.pagination.last_page"
     ></Pagination>
   </div>
-  <!-- <div
-    
-    style="height: 100vh"
-    class="absolute-full flex items-center justify-center"
-  >
-    <q-spinner-puff color="primary" size="10%" />
-  </div> -->
 </template>
 <script lang="ts" setup>
 import { orderRepo } from 'src/models/order/orderRepo'
@@ -120,3 +117,9 @@ const orderTypes = ref<
   },
 ])
 </script>
+
+<style lang="scss" scoped>
+.bordered-type {
+  border: 1px var(--secondary) solid;
+}
+</style>

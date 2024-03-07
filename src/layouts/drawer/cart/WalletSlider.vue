@@ -25,7 +25,7 @@
     </div>
     <div
       v-if="usePointsMode"
-      class="column gap-10 bg-background-color border-radius px-6 py-8 mt-7"
+      class="column gap-10 bg-background-color text-on-backing-color border-radius px-6 py-8 mt-7"
     >
       <div class="row no-wrap justify-between body bold">
         <div>Доступно</div>

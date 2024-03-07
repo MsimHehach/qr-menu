@@ -3,6 +3,7 @@
     v-if="!!info && !loading"
     class="px-xl-35 px-sm-20 px-xs-5 px-md-25 px-lg-30 pb-20"
   >
+    <PrepareUiSettings />
     <div class="row mb-sm-4">
       <div class="col">
         <h4>
@@ -38,7 +39,9 @@
           </h6>
           <ol class="gap-5 column pl-8">
             <li v-for="(el, index) in info.sales_points" :key="index">
-              {{ el.address }} ({{ getLegalEntity(el)?.name || '-' }})
+              {{ el.custom_address || el.address }} ({{
+                getLegalEntity(el)?.name || '-'
+              }})
             </li>
           </ol>
         </div>
@@ -61,19 +64,26 @@
           <div>
             <a
               :href="linkToPolicy"
-              target="_blank"
               class="my-0"
               style="font-size: 14px"
+              target="_blank"
               >Политика в отношении обработки персональных данных</a
             >
           </div>
           <div class="mt-8">
             <a
               :href="linkToTermsOfUse"
-              target="_blank"
               class="mt-8"
               style="font-size: 14px"
+              target="_blank"
               >Пользовательское соглашение</a
+            >
+            <a
+              :href="linkToOffer"
+              class="mt-8"
+              style="font-size: 14px"
+              target="_blank"
+              >Публичная оферта</a
             >
           </div>
         </div>
@@ -95,26 +105,26 @@
             </div>
             <div class="row full-width justify-evenly my-15">
               <img
+                src="assets/psMir.png"
                 style="object-fit: contain"
                 width="150px"
-                src="~assets/psMir.png"
               />
               <img
+                src="assets/psVisa.png"
                 style="object-fit: contain"
                 width="150px"
-                src="~assets/psVisa.png"
               />
 
               <img
+                src="assets/psMasterCard.png"
                 style="object-fit: contain"
                 width="150px "
-                src="~assets/psMasterCard.png"
               />
 
               <img
+                src="assets/psJCB.svg"
                 style="object-fit: contain"
                 width="150px "
-                src="~assets/psJCB.svg"
               />
             </div>
             <div>
@@ -159,7 +169,7 @@
               :key="index"
               class="column col-xs-12 col-sm-9 col-md-6 gap-5 mb-10"
             >
-              <q-separator class="divider-color" v-if="index" />
+              <q-separator v-if="index" class="divider-color" />
               <div>{{ el.name || ' -' }}</div>
               <div>ИНН: {{ el.code || ' -' }}</div>
               <div>КПП: {{ el.registration_code || ' -' }}</div>
@@ -169,34 +179,84 @@
             </div>
           </div>
         </div>
+        <div
+          v-if="!loading"
+          class="row full-width"
+          :key="$company.companyForProfile?.id"
+        >
+          <ProfileAddressesOnMap class="full-width">
+            <template v-slot:title>
+              <div class="row items-center mt-0 mb-10 gap-10">
+                <h6 class="bold ma-0">Карта с нашими заведениями:</h6>
+                <div
+                  v-if="
+                    $companyGroup.item &&
+                    $companyGroup.item.companies.length > 1
+                  "
+                >
+                  <CButton
+                    class="body"
+                    :label="$company.companyForProfile?.name || undefined"
+                    text-button
+                    icon-right="fal fa-chevron-down"
+                    @click="selectCompanyModalModelValue = true"
+                    text-color="on-background-color"
+                    icon-color="on-background-color"
+                    hover-text-color="primary"
+                  />
+                </div>
+              </div>
+            </template>
+          </ProfileAddressesOnMap>
+        </div>
       </div>
     </div>
   </div>
   <div v-if="loading" class="absolute-center items-center justify-center flex">
     <q-spinner-puff color="accent1" size="20%" />
   </div>
+  <SelectCompanyModal
+    v-model="selectCompanyModalModelValue"
+    :selected-company="$company.companyForProfile || undefined"
+    @select="$company.companyForProfile = $event"
+    close-on-select
+  />
 </template>
 <script lang="ts" setup>
 import { TermsOfServiceInfo } from 'src/models/companyGroup/companyGroup'
-import { companyGroupRepo } from 'src/models/companyGroup/companyGroupRepo'
 import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import BestToPay from './BestToPay.vue'
 import { SalesPointRaw } from 'src/models/salesPoint/salesPoint'
+import ProfileAddressesOnMap from 'pages/profile/ProfileAddressesOnMap.vue'
+import { companyGroupRepo } from 'src/models/companyGroup/companyGroupRepo'
+import { AppManager } from 'src/models/utils/appManager'
+import { companyRepo } from 'src/models/company/companyRepo'
+import SelectCompanyModal from 'components/dialogs/SelectCompanyModal.vue'
+import CButton from 'components/template/buttons/CButton.vue'
+import PrepareUiSettings from 'components/template/PrepareUiSettings.vue'
+
 const info = ref<TermsOfServiceInfo | null>(null)
 const loading = ref(false)
 const route = useRoute()
+const selectCompanyModalModelValue = ref(false)
 
 const linkToPolicy = computed(() => {
   return `https://${window.location.host}/${String(
-    route.params.externalId
+    route.params.externalId,
   )}/policy`
 })
 
 const linkToTermsOfUse = computed(() => {
   return `https://${window.location.host}/${String(
-    route.params.externalId
+    route.params.externalId,
   )}/terms_of_use`
+})
+
+const linkToOffer = computed(() => {
+  return `https://${window.location.host}/${String(
+    route.params.externalId,
+  )}/offer`
 })
 
 // const isBest2Pay = computed(() => {
@@ -207,16 +267,34 @@ const linkToTermsOfUse = computed(() => {
 
 const getLegalEntity = (v: SalesPointRaw) => {
   return info.value?.legal_entities.find((val) =>
-    val.sales_points.map((el) => el.uuid).includes(v.uuid)
+    val.sales_points.map((el) => el.uuid).includes(v.uuid),
   )
 }
 
 onMounted(async () => {
+  if (!route.params.externalId) return
   loading.value = true
-  const res = await companyGroupRepo.getTermsOfServiceInfo(
-    String(route.params.externalId)
+  await new AppManager({
+    companyGroupId: String(route.params.externalId),
+  }).initApp()
+  companyRepo.companyForProfile = companyRepo.item
+  if (
+    !companyRepo.companyForProfile &&
+    companyGroupRepo.item?.companies.length
+  ) {
+    companyRepo.companyForProfile = companyGroupRepo.item.companies[0]
+  }
+  info.value = await companyGroupRepo.getTermsOfServiceInfo(
+    String(route.params.externalId),
   )
-  info.value = res
+  // const headers = {
+  //   'Company-Group': route.params.externalId,
+  // }
+  //
+  // await companyGroupRepo.current(headers)
+  // if (companyGroupRepo.item && companyGroupRepo.item?.companies.length < 2) {
+  //   companyRepo.companyForProfile = companyGroupRepo.item.companies[0]
+  // }
 
   loading.value = false
 })

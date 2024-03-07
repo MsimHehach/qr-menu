@@ -8,12 +8,13 @@
     v-model="currentAddress"
     :loading-color="loadingColor"
     :icon="inputIcon"
-    height="42px"
+    height="48px"
     :icon-color="iconColor"
     :icon-class="iconClass"
     @icon-click="$emit('iconClick')"
     @update:modelValue="$emit('update:modelValue', $event), (updated = true)"
     :rules="[() => validateAddress(currentFullAddress)]"
+    :placeholder="placeholder"
   >
     <q-menu
       v-model="menu"
@@ -60,6 +61,7 @@ const props = withDefaults(
     iconClass?: string
     iconColor?: string
     loadingColor?: string
+    placeholder?: string
   }>(),
   { inputColor: 'secondary2', type: 'delivery' }
 )
@@ -94,7 +96,7 @@ const loadAddresses = async (address: string) => {
 
 const selectAddress = (val: Address) => {
   currentFullAddress.value = val
-  emit('update', val)
+  emit('update', { ...val, coords: [val.coords[1], val.coords[0]] })
   menu.value = false
 }
 

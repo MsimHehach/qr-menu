@@ -11,13 +11,14 @@
     :to="to"
     :loading="loading"
     :disabled="_disabled"
-    class="c-btn border-radius"
+    class="c-btn border-radius2"
     :class="{
       borderedButton: outline,
       block: textButton && !to,
       underline: underline,
       'underline-fixed': underlined,
       'text-button': textButton,
+      outlined: outlined,
     }"
     :style="`width:${_width}; height:${_height};font-size:${textSize}; padding:${
       textButton || noPadding ? '0px;' : '4px 16px;'
@@ -76,9 +77,11 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from 'vue';
+import { computed, ref } from 'vue'
+import { useYandexMetrika } from 'yandex-metrika-vue3'
+import { useRoute } from 'vue-router'
 
-const emit = defineEmits(['click']);
+const emit = defineEmits(['click'])
 
 const props = defineProps({
   ripple: {
@@ -92,6 +95,7 @@ const props = defineProps({
     type: Boolean,
   },
   outline: Boolean,
+  outlined: Boolean,
   color: {
     default: 'button-color',
     type: String,
@@ -135,92 +139,94 @@ const props = defineProps({
   ellipsis: Number,
   iconGap: [Number, String],
   labelLineHeight: String,
-});
+})
 
-const _hover = ref(false);
+const metrika = useYandexMetrika()
+const route = useRoute()
+const _hover = ref(false)
 
 const iconGap_ = computed(() => {
-  if (props.iconNoGutters) return '0';
-  if (!props.iconGap) return '3';
+  if (props.iconNoGutters) return '0'
+  if (!props.iconGap) return '3'
   if (Number.isNaN(Number(props.iconGap)))
     console.warn(
       'Icon gap prop expected number or numerical string, got string'
-    );
-  return props.iconGap;
-});
+    )
+  return props.iconGap
+})
 
 const _color = computed(() => {
-  // return _hover.value && props.hoverColor ? props.hoverColor : props.textButton ? 'tranparent' : props.color
   if (_hover.value && props.hoverColor) {
-    return props.hoverColor;
+    return props.hoverColor
   } else if (props.textButton) {
-    return 'transparent';
+    return 'transparent'
   } else if (_hover.value && props.color === 'primary') {
-    return 'primary';
+    return 'primary'
   } else if (_hover.value && props.color === 'primary') {
-    return 'primary';
+    return 'primary'
   } else {
-    return props.color;
+    return props.color
   }
-});
+})
 
 const _textColor = computed(() => {
   if (_hover.value && props.hoverTextColor) {
-    return props.hoverTextColor;
+    return props.hoverTextColor
   } else if (_hover.value && props.color === 'secondary1') {
-    return 'primary';
+    return 'primary'
   } else if (_hover.value && props.textButton) {
-    return 'primary';
+    return 'primary'
   } else {
-    return props.textColor;
+    return props.textColor
   }
-});
+})
 
 const _height = computed(() => {
-  let height;
+  let height
   if (props.textButton && !props.height) {
-    height = 'unset';
+    height = 'unset'
   } else if (!props.height) {
-    height = '42px';
+    height = '42px'
   } else {
-    height = props.height;
+    height = props.height
   }
   if (
     height !== 'unset' &&
     height.slice(height.length - 2, height.length) !== 'px'
   ) {
-    return (height += 'px');
+    return (height += 'px')
   } else {
-    return height;
+    return height
   }
-});
+})
 
 const _width = computed(() => {
-  let width = props.textButton ? 'unset' : props.width;
+  let width = props.textButton ? 'unset' : props.width
   if (props.block) {
-    return '100%';
+    return '100%'
   }
-  if (width === 'inherit') return width;
+  if (width === 'inherit') return width
   if (
     width !== 'unset' &&
     width !== 'auto' &&
     width.slice(width.length - 2, width.length) !== 'px' &&
     width.slice(width.length - 1) !== '%'
   ) {
-    return (width += 'px');
+    return (width += 'px')
   } else {
-    return width;
+    return width
   }
-});
+})
 
 const _disabled = computed(() => {
-  if (props.disabled) return true;
-  else return null;
-});
+  if (props.disabled) return true
+  else return null
+})
 
 const clickHandler = () => {
-  emit('click');
-};
+  metrika.hit(route.fullPath)
+  emit('click')
+}
 </script>
 
 <style lang="scss">
@@ -237,6 +243,10 @@ const clickHandler = () => {
 
 .c-btn span {
   height: 100%;
+}
+
+.outlined {
+  border: 1px solid var(--secondary);
 }
 
 .c-btn .left-icon {
@@ -260,9 +270,12 @@ const clickHandler = () => {
 }
 
 .c-btn:disabled:not(.block):not(.bg-secondary2) {
-  background-color: $secondary !important;
-  opacity: 1 !important;
+  filter: contrast(70%);
 }
+
+// .c-btn.outlined {
+//   border: 1px var(--secondary-button-color) solid;
+// }
 
 .c-btn.underline:after {
   content: '';

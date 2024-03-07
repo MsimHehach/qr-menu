@@ -7,6 +7,7 @@ export type DeliveryAreaRaw = {
   name: string | null
   min_delivery_minutes: number
   max_delivery_minutes: number
+  active: boolean
 }
 
 export class DeliveryArea implements BaseModel {
@@ -19,6 +20,7 @@ export class DeliveryArea implements BaseModel {
   maxDeliveryMinutes: number
   updated: boolean | undefined
   created: boolean | undefined
+  active: boolean
 
   constructor(raw: DeliveryAreaRaw) {
     this.id = raw.uuid
@@ -27,6 +29,7 @@ export class DeliveryArea implements BaseModel {
     this.name = raw.name || ''
     this.minDeliveryMinutes = raw.min_delivery_minutes
     this.maxDeliveryMinutes = raw.max_delivery_minutes
+    this.active = raw.active
   }
 
   toJson(): Record<string, any> {

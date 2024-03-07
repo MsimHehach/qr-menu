@@ -34,21 +34,21 @@ export type MenuFilters = {
 }
 
 export type ItemSizeRaw = {
-  uuid: string
-  name: string
-  menu_item: string
-  sku: string
-  image: ImageRaw | null
-  is_hidden: boolean
-  sorting: number
+  uuid?: string
+  name?: string
+  menu_item?: string
+  sku?: string
+  image?: ImageRaw | null
+  is_hidden?: boolean
+  sorting?: number
   price?: number
   prices?: PriceRaw[]
-  code: string | number | null
-  external_id: string | number | null
-  characteristics: { weight: number } | null
-  nutritions: NotritionRaw[]
-  created_at: string
-  updated_at: string
+  code?: string | number | null
+  external_id?: string | number | null
+  characteristics?: { weight: number } | null
+  nutritions?: NotritionRaw[]
+  created_at?: string
+  updated_at?: string
   modifier_groups?: MenuModifierGroupRaw[]
   restrictions?: {
     max_quantity: number
@@ -72,21 +72,21 @@ export type MenuRaw = {
 }
 
 export class ItemSize implements BaseModel {
-  id: string
-  name: string
-  menuItem: string
-  sku: string
+  id: string | undefined
+  name: string | null
+  menuItem: string | null
+  sku: string | null
   image: Image | null
-  sorting: number
-  price?: number
+  sorting: number | null
+  price?: number | null
   prices?: PriceRaw[]
   code: string | number | null
   isHidden: boolean
   externalId: string | number | null
   characteristics: { weight: number }
   nutritions: NotritionRaw[]
-  createdAt: string
-  updatedAt: string
+  createdAt: string | null
+  updatedAt: string | null
   modifierGroups?: MenuModifierGroup[]
   restrictions?: {
     max_quantity: number
@@ -97,24 +97,24 @@ export class ItemSize implements BaseModel {
 
   constructor(raw: ItemSizeRaw) {
     this.id = raw.uuid
-    this.name = raw.name
-    this.menuItem = raw.menu_item
-    this.sku = raw.sku
+    this.name = raw.name || null
+    this.menuItem = raw.menu_item || null
+    this.sku = raw.sku || null
     this.image = raw.image ? new Image(raw.image) : null
-    this.sorting = raw.sorting
+    this.sorting = raw.sorting || null
     this.price = raw.price
     this.prices = raw.prices
-    this.code = raw.code
-    this.externalId = raw.external_id
+    this.code = raw.code || null
+    this.externalId = raw.external_id || null
     this.characteristics = raw.characteristics || { weight: 0 }
-    this.nutritions = raw.nutritions
-    this.createdAt = raw.created_at
-    this.updatedAt = raw.updated_at
+    this.nutritions = raw.nutritions || []
+    this.createdAt = raw.created_at || null
+    this.updatedAt = raw.updated_at || null
     this.modifierGroups = raw.modifier_groups?.map(
       (v) => new MenuModifierGroup(v)
     )
     this.restrictions = raw.restrictions
-    this.isHidden = raw.is_hidden
+    this.isHidden = raw.is_hidden || false
   }
 
   toJson() {
@@ -133,6 +133,7 @@ export class Menu implements BaseModel {
   updated_at?: string
   groups?: MenuGroup[]
   description?: string
+  gro: any
 
   constructor(raw: MenuRaw) {
     this.id = raw.uuid || ''
@@ -145,6 +146,10 @@ export class Menu implements BaseModel {
     this.updated_at = raw.updated_at || ''
     this.groups = raw.groups ? raw.groups.map((v) => new MenuGroup(v)) : []
     this.description = raw.description
+  }
+
+  get allMenuItems() {
+    return this.groups?.flatMap((v) => v.items.map((el) => el))
   }
 
   toJson(): Record<string, any> {

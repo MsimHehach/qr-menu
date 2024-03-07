@@ -1,10 +1,32 @@
+@font-face {
+  font-family: 'Gilroy';
+  src: local('Gilroy'), url(src/fonts/Gilroy/Gilroy-Medium.ttf);
+}
+
+@font-face {
+  font-family: 'Gilroy-Bold';
+  src: local('Gilroy'), url(src/fonts/Gilroy/Gilroy-SemiBold.ttf);
+}
+
 * {
-  // font-family: 'Montserrat', sans-serif;
-  font-family: 'Rubik', sans-serif;
+  font-family: 'Gilroy', sans-serif;
+}
+
+.ellipsis-4-lines {
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  display: -webkit-box;
+}
+
+.bottom-bar-text {
+  font-size: 12px;
+  line-height: 19px;
 }
 
 .bold {
-  font-weight: 500 !important;
+  // font-weight: 600 !important;
+  font-family: 'Gilroy-Bold' !important;
   .q-field__label {
     @extend .bold;
   }
@@ -28,38 +50,36 @@
 }
 
 .huge {
-  font-size: 48px;
+  font-size: 50px;
   line-height: 60px;
 }
 
-.header2 {
-  font-size: 22px;
-  font-weight: 500;
-  line-height: 26.4px;
+.huge2 {
+  font-size: 40px;
+  line-height: 44px;
+}
+
+.huge3 {
+  font-size: 30px;
+  line-height: 33px;
 }
 
 .header3 {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 500;
-  line-height: 26.4px;
+  line-height: 26px;
 }
 
 .subtitle-text {
   font-weight: 500;
-  font-size: 16px;
-  line-height: 22px;
-}
-
-.subtitle-text-light {
-  font-weight: 400;
-  font-size: 16px;
-  line-height: 22px;
+  font-size: 18px;
+  line-height: 25.2px;
 }
 
 .body {
-  font-weight: 400;
-  font-size: 15px;
-  line-height: 21px;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 22px;
   .q-field__label,
   &.q-btn div {
     @extend .body;
@@ -72,10 +92,16 @@
   }
 }
 
+.helper-text {
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 19.6px;
+}
+
 .secondary-text {
   font-weight: 400;
-  font-size: 13px;
-  line-height: 15.85px;
+  font-size: 14px;
+  line-height: 19.6px;
   .q-field__label,
   .q-field__native,
   textarea::placeholder {
@@ -86,7 +112,7 @@
 .caption-text {
   font-weight: 400;
   font-size: 12px;
-  line-height: 14.63px;
+  line-height: 14px;
   .q-field__label,
   &.q-btn div {
     @extend .caption-text;
@@ -132,26 +158,38 @@ body.screen--md {
     line-height: 50px;
   }
 
+  .huge3 {
+    font-size: 30px;
+    line-height: 33px;
+  }
+
+  .header3 {
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 25px;
+  }
+
   .subtitle-text {
     font-weight: 500;
-    font-size: 13px;
-    line-height: 18.2px;
-  }
-  .subtitle-text-light {
-    font-weight: 400;
-    font-size: 13px;
-    line-height: 18.2px;
+    font-size: 18px;
+    line-height: 25px;
   }
 
   .body {
     font-weight: 400;
-    font-size: 13px;
-    line-height: 15.6px;
+    font-size: 16px;
+    line-height: 22px;
   }
+
   .secondary-text {
     font-weight: 400;
+    font-size: 14px;
+    line-height: 19.6px;
+  }
+
+  .caption-text {
     font-size: 12px;
-    line-height: 14.63px;
+    line-height: 14.4px;
   }
 }
 
@@ -162,15 +200,26 @@ body.screen--sm {
     line-height: 24px;
   }
 
-  .huge {
-    font-size: 38px;
-    line-height: 46px;
+  .huge3 {
+    font-size: 24px;
+    line-height: 30px;
   }
 
-  .header2 {
+  .subtitle-text {
     font-weight: 500;
+    font-size: 15px;
+    line-height: 21px;
+  }
+
+  .huge {
+    font-size: 30px;
+    line-height: 38px;
+  }
+
+  .header3 {
     font-size: 18px;
-    line-height: 140%;
+    font-weight: 500;
+    line-height: 23px;
   }
 
   .caption-text {
@@ -184,15 +233,17 @@ body.screen--sm {
     font-size: 11px;
     line-height: 12.19px;
   }
+
   .body {
     font-weight: 400;
-    font-size: 13px;
-    line-height: 15.6px;
+    font-size: 16px;
+    line-height: 21px;
   }
+
   .secondary-text {
     font-weight: 400;
-    font-size: 11px;
-    line-height: 13.41px;
+    font-size: 14px;
+    line-height: 19.6px;
   }
   .card-text {
     font-weight: 400;
@@ -217,15 +268,26 @@ body.screen--xs {
     line-height: 24px;
   }
 
+  .huge3 {
+    font-size: 24px;
+    line-height: 30px;
+  }
+
+  .header3 {
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 23px;
+  }
+
+  .subtitle-text {
+    font-weight: 500;
+    font-size: 15px;
+    line-height: 21px;
+  }
+
   .huge {
     font-size: 30px;
     line-height: 38px;
-  }
-
-  .header2 {
-    font-weight: 500;
-    font-size: 18px;
-    line-height: 140%;
   }
 
   .caption-text {
@@ -241,13 +303,13 @@ body.screen--xs {
   }
   .body {
     font-weight: 400;
-    font-size: 13px;
-    line-height: 15.6px;
+    font-size: 16px;
+    line-height: 21px;
   }
   .secondary-text {
     font-weight: 400;
-    font-size: 11px;
-    line-height: 13.41px;
+    font-size: 14px;
+    line-height: 19.6px;
   }
   .card-text {
     font-weight: 400;

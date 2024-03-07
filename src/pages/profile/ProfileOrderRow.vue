@@ -1,96 +1,80 @@
 <template>
-  <div
-    class="border-radius box-shadow column full-width"
-    style="overflow: overlay"
-  >
-    <div
-      class="row full-width justify-between px-5 py-6 bg-backing-color text-on-backing-color body bold"
-    >
-      <div>
-        {{ order.number ? '№ ' + order.number : 'Без номера' }}
+  <div class="bordered pa-10 border-radius column full-width">
+    <div class="row full-width justify-between items-center header3 mb-2">
+      <div class="bold">
+        {{ order.deliveryType }}
       </div>
-      <div class="column gap-2">
-        <div :class="`text-${order.orderStatus.color}`">
-          {{ order.orderStatus.name }}
-        </div>
+      <div class="bold">
+        {{ beautifyNumber(order.discountedTotalSum, true) }} ₽
       </div>
     </div>
     <div
-      class="column gap-5 full-width bg-white-opacity px-5 py-6 secondary-text"
+      style="opacity: 0.6"
+      class="row full-width justify-between items-center body mb-2"
     >
-      <div
-        v-for="(field, index2) in getDataFields(order)"
-        :key="index2"
-        class="row no-wrap items-center justify-between full-width"
-      >
-        <div class="row items-center no-wrap gap-4">
-          <div
-            style="width: 40px; height: 40px"
-            class="row items-center justify-center border-radius box-shadow bg-white-opacity"
-          >
-            <CIcon :name="field.icon" />
+      <div>{{ order.salesPoint.customAddress }}</div>
+      <div>{{ order.deliveryTime }}</div>
+    </div>
+    <q-separator color="divider-color" class="my-6" />
+    <div class="row full-width justify-between">
+      <div class="row items-center gap-6 no-wrap">
+        <q-img
+          width="40px"
+          height="40px"
+          style="min-width: 40px; min-height: 40px"
+          class="border-radius"
+          fit="cover"
+          :src="order.salesPoint.image?.thumbnail || $store.images.empty"
+        >
+          <template v-slot:error>
+            <span>
+              <q-img
+                :ratio="1"
+                fit="cover"
+                style="min-width: 40px; min-height: 40px"
+                height="40px"
+                width="40px"
+                :src="$store.images.empty"
+              ></q-img>
+            </span> </template
+        ></q-img>
+        <div class="column gap-1">
+          <div class="subtitle-text bold">
+            Заказ № {{ order.number || '-' }}
           </div>
-          <div>{{ field.label }}</div>
+          <div style="opacity: 0.6" class="body">
+            {{ order.getPaymentStatus?.label }}
+          </div>
         </div>
-        <div class="col-8 column gap-2" style="text-align: end">
-          <div class="ellipsis-2-lines">{{ field.val || '-' }}</div>
-          <div>{{ field.date }}</div>
+      </div>
+      <div class="column gap-4 items-end body">
+        <div
+          class="px-5 py-3 row items-center gap-2"
+          :style="`color: ${
+            order.orderStatus.color
+          };background-color: ${lightColor(order.orderStatus.color, '20')}`"
+          style="border-radius: 8px"
+        >
+          {{ order.orderStatus.name }}
+        </div>
+        <div v-if="order.receivedBonuses">
+          + {{ order.receivedBonuses }} бонусов
         </div>
       </div>
     </div>
   </div>
 </template>
 <script lang="ts" setup>
-import CIcon from 'src/components/template/helpers/CIcon.vue'
 import { Order } from 'src/models/order/order'
+import { beautifyNumber, lightColor } from 'src/models/store'
 
 defineProps<{
   order: Order
 }>()
-
-const getDataFields = (order: Order) => {
-  const result: {
-    label: string
-    icon: string
-    val: string | null | number
-    date?: string | null
-  }[] = [
-    {
-      label: 'Списано баллов',
-      icon: 'fa-light fa-piggy-bank',
-      val: order.appliedBonuses,
-      date: undefined,
-    },
-    {
-      label: 'Итого',
-      icon: 'fa-light fa-piggy-bank',
-      val: order.totalSum ? order.totalSum + ' ₽' : '-',
-      date: undefined,
-    },
-  ]
-
-  if (order.type === 'pickup') {
-    result.unshift({
-      icon: 'fa-light fa-person-dolly',
-      label: 'Самовывоз',
-      val: order.salesPoint.customAddress || order.salesPoint.address,
-      date: order.deliveryTime,
-    })
-  } else if (order.type === 'delivery') {
-    result.unshift({
-      label: 'Доставка',
-      icon: 'fa-light fa-truck',
-      val: order.salesPoint.customAddress || order.salesPoint.address,
-      date: order.deliveryTime,
-    })
-  } else {
-    result.unshift({
-      label: 'Бронь',
-      icon: 'fa-light fa-calendar-day',
-      val: order.salesPoint.customAddress || order.salesPoint.address,
-      date: order.deliveryTime,
-    })
-  }
-  return result
-}
 </script>
+
+<style lang="scss" scoped>
+.bordered {
+  outline: 1px var(--secondary) solid;
+}
+</style>

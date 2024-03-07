@@ -1,4 +1,4 @@
-import _ from 'lodash'
+import { cloneDeep } from 'lodash'
 import { BaseModel } from './baseModel'
 import { BaseModelApi } from './baseModelApi'
 import { BasePagination } from './basePagination'
@@ -31,7 +31,7 @@ abstract class BaseRepo<T extends BaseModel> {
     params: Record<string, any> = {},
     config: BaseListConfig = {}
   ): Promise<{ pagination: BasePagination; items: Array<T> }> {
-    let _params = _.cloneDeep(params)
+    let _params = cloneDeep(params)
     _params = this.processParams(
       Object.assign(_params, {
         page: config.page || 1,

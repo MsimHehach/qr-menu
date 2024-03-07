@@ -6,6 +6,8 @@ import { ImageRaw } from '../image/image'
 
 export class NewsRepo extends BaseRepo<News> {
   api = newsApi
+  news: News[] = []
+  promotions: News[] = []
   filters: NewsFilters = { active: false }
 
   async setImage(

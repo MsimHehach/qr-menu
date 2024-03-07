@@ -1,10 +1,15 @@
 <template>
   <div>
-    <q-card style="height: 320px" class="no-box-shadow border-radius" bordered>
+    <q-card
+      style="height: 460px"
+      class="no-box-shadow border-radius bg-backing-color"
+      bordered
+    >
       <q-item class="justify-center pa-0">
         <q-skeleton
           :style="`border-radius: ${getBorderRadius}`"
           :width="'100%'"
+          class="bg-backing-color"
           :height="imageSize"
           square
         />
@@ -17,7 +22,7 @@
                 type="text"
                 width="100%"
                 height="30px"
-                class="mb-2 mb-md-3"
+                class="mb-2 mb-md-3 bg-backing-color"
               />
             </div>
             <q-skeleton type="text" height="30px" width="80px" class="mt-8" />
@@ -37,8 +42,8 @@ import { Screen } from 'quasar'
 import { uiSettingsRepo } from 'src/models/uiSettings/uiSettingsRepo'
 
 const imageSize = computed(() => {
-  if (Screen.gt.md) return '210px'
-  if (Screen.gt.sm) return '210px'
+  if (Screen.gt.md) return '250px'
+  if (Screen.gt.sm) return '250px'
   return '210px'
 })
 

@@ -1,9 +1,9 @@
 $breakpoints: (
   'xs': 0,
-  'sm': 600,
-  'md': 1024,
-  'lg': 1440,
-  'xl': 1920,
+  'sm': 480,
+  'md': 640,
+  'lg': 960,
+  'xl': 1280,
 );
 
 @media (min-width: 0px) {

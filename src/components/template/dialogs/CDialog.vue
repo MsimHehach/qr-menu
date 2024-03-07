@@ -6,43 +6,43 @@
     :square="square"
     :modelValue="modelValue"
     @update:modelValue="$emit('update:modelValue')"
+    :class="{ 'maximize-modal': maximize }"
   >
     <q-card
-      :style="`max-width: ${width}; min-height: ${height}; height: ${heightPercent}`"
-      style="
-        width: 100%;
-        display: flex;
-        box-shadow: 0px 0px 13px rgba(65, 39, 130, 0.2) !important;
-      "
-      class="relative-position no-overflow border-radius column no-wrap no-shadow bg-background-color"
+      :style="`max-width: ${width}; min-height: ${height}; max-height: ${height}; height: ${heightPercent}; border-radius:${
+        position === 'bottom' ? bottomBorderRadius() : ''
+      }`"
+      style="width: 100%; display: flex; transition: 0.2s"
+      class="relative-position no-overflow column no-wrap no-shadow bg-background-color"
+      :class="{ 'border-radius': position !== 'bottom' }"
     >
       <div
         v-if="$slots.header"
-        style="height: 60px"
-        class="row full-width items-center header3 px-10 bg-modal-header-color text-on-modal-header-color"
+        class="row full-width items-center header3 bold px-md-15 px-xs-8 bg-background-color text-on-background-color mt-15"
       >
         <slot name="header"></slot>
       </div>
+
       <div
         :class="[
-          !noPadding ? 'pb-15 px-10' : dialogClass,
-          $slots.header ? (noPadding ? '' : 'pt-10') : 'pt-15 ',
+          !noPadding ? 'pb-md-15 pb-xs-12 px-md-15 px-xs-8' : dialogClass,
+          noPadding ? '' : $slots.header ? 'pt-10' : 'pt-md-15 pt-xs-12',
         ]"
-        style="
-          overflow: auto;
+        :style="`overflow-y:${noOverflow ? 'hidden' : 'auto'};
           width: 100%;
+          height: 100%;
           max-height: inherit;
-          border-radius: 0;
-        "
+          overflow-x: hidden
+          `"
       >
-        <div style="position: absolute; top: -20px; right: -25px; z-index: 1">
+        <div style="position: absolute; top: -24px; right: -29px; z-index: 1">
           <CIcon
             v-if="!noClose"
             class="cursor-pointer"
             hoverColor="primary"
             color="white"
             name="fa-light fa-xmark"
-            size="26px"
+            size="32px"
             v-close-popup
           />
         </div>
@@ -60,6 +60,7 @@
 </template>
 
 <script setup lang="ts">
+import { uiSettingsRepo } from 'src/models/uiSettings/uiSettingsRepo'
 import CIcon from '../helpers/CIcon.vue'
 
 defineProps({
@@ -91,8 +92,13 @@ defineProps({
   noOverflow: Boolean,
   heightPercent: String,
   withOverflow: Boolean,
+  maximize: Boolean,
 })
 defineEmits(['update:modelValue'])
+
+const bottomBorderRadius = () => {
+  return `${uiSettingsRepo.item?.borderRadius}px ${uiSettingsRepo.item?.borderRadius}px 0 0`
+}
 </script>
 
 <style lang="scss" scoped>

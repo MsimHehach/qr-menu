@@ -1,9 +1,7 @@
 <template>
-  <div class="pa-10">
-    <div
-      class="column row items-center full-width border-radius box-shadow bg-background-color py-10 gap-10"
-    >
-      <CIcon name="fa-thin fa-check-circle" color="primary" size="60px" />
+  <div class="pt-1">
+    <div class="column row items-center full-width bg-background-color gap-7">
+      <CIcon name="fa-thin fa-check-circle" color="primary" size="50px" />
       <div class="header3 text-primary">Заявка на бронирование отправлена</div>
       <div class="row full-width justify-center">
         <div
@@ -15,28 +13,30 @@
         </div>
       </div>
     </div>
-    <div
-      class="column full-width bg-background-color box-shadow border-radius mt-10"
-    >
-      <div class="row full-width pa-10 body bold">#112312</div>
+    <div class="column full-width mt-12">
       <div class="column full-width gap-5 px-5 pb-6">
         <div
           v-for="(el, index) in infoFields"
           :key="index"
-          class="row full-width items-center justify-between"
+          class="row full-width items-center body justify-between"
         >
-          <div class="row items-center gap-3 no-wrap">
-            <div class="row px-4 py-3 border-radius box-shadow">
-              <CIcon color="on-background-color" :name="el.icon" />
+          <div class="row items-center gap-8 no-wrap">
+            <div class="row px-4 py-3 border-radius bg-primary">
+              <CIcon size="19px" color="on-primary" :name="el.icon" />
             </div>
-            <div class="secondary-text">{{ el.label }}</div>
+            <div>{{ el.label }}</div>
           </div>
-          <div class="secondary-text">{{ el.value }}</div>
+          <div>{{ el.value }}</div>
         </div>
       </div>
     </div>
     <div class="row full-width mt-15 justify-center">
-      <CButton @click="$emit('close')" width="200px" label="Готово" />
+      <CButton
+        @click="$emit('close')"
+        class="body"
+        width="260px"
+        label="Готово"
+      />
     </div>
     <!-- <div class="column mt-15 items-center gap-13 full-width">
       <div class="header3">Хотите сделать предзаказ блюд?</div>

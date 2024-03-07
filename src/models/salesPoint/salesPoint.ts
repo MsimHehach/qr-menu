@@ -22,7 +22,7 @@ export const salesPointPromocodesSettingNames = {
 }
 
 export const salesPointPromocodesSettingValues = Object.keys(
-  salesPointPromocodesSettingNames
+  salesPointPromocodesSettingNames,
 ).map((v) => {
   const key = v as keyof typeof salesPointPromocodesSettingNames
   return {
@@ -38,6 +38,7 @@ export type SalesPointSettings = {
   booking_enabled: boolean
   booking_table_pick_enabled: boolean
   cart_enabled: boolean
+  allow_order_arrangement_without_delivery_time: boolean
   promo_codes: PromoCodeMode
 }
 
@@ -62,6 +63,8 @@ export type PaymentSettings = {
     online: string
   }
   update_on_parent_change?: boolean
+  net_monet_enabled: boolean
+  pay_later_enabled: boolean
 }
 
 export type SalesPointRaw = {
@@ -72,7 +75,7 @@ export type SalesPointRaw = {
   payment_settings: PaymentSettings
   external_id: string
   address: string
-  custom_address: string
+  custom_address: string | null
   coords: {
     latitude: number | null
     longitude: number | null
@@ -102,7 +105,7 @@ export class SalesPoint implements BaseModel {
   paymentSettings: PaymentSettings
   externalId: string
   address: string
-  customAddress: string
+  customAddress: string | null
   coords: {
     latitude: number | null
     longitude: number | null
@@ -137,8 +140,8 @@ export class SalesPoint implements BaseModel {
       typeof raw.company === 'string'
         ? raw.company
         : raw.company
-        ? new Company(raw.company)
-        : null
+          ? new Company(raw.company)
+          : null
     this.companyGroup = raw.company_group
     this.testSettings = raw.test_settings
     this.testPaymentSettings = raw.test_payment_settings

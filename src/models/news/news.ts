@@ -2,6 +2,11 @@ import moment from 'moment'
 import { BaseModel } from 'src/corexModels/apiModels/baseModel'
 import { ImageRaw } from '../image/image'
 
+export enum NewsType {
+  DEFAULT = 'default',
+  PROMOTION = 'promotion',
+}
+
 export type NewsFilters = {
   search?: string
   active?: boolean
@@ -25,6 +30,7 @@ export type NewsRaw = {
   sales_points?: string[]
   send_date: string | null
   views_count: number
+  type: NewsType
 }
 
 export class News implements BaseModel {
@@ -45,6 +51,7 @@ export class News implements BaseModel {
   isHtml?: boolean
   sendDate: string | null
   viewsCount: number
+  type: NewsType
 
   constructor(raw: NewsRaw) {
     this.id = raw.uuid || ''
@@ -82,6 +89,7 @@ export class News implements BaseModel {
           .format('DD.MM.YYYY HH:mm')
       : null
     this.viewsCount = raw.views_count
+    this.type = raw.type
   }
 
   toJson(): Record<string, any> {

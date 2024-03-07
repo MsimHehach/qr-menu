@@ -2,24 +2,34 @@
   <CDialog
     :model-value="modelValue"
     @update:model-value="$emit('update:modelValue', $event)"
-    width="456px"
+    :width="'400px'"
+    :position="$q.screen.lt.md ? 'bottom' : undefined"
+    :maximize="$q.screen.lt.md"
+    :no-close="$q.screen.lt.md || noClose"
   >
-    <template v-slot:header>
-      <div class="row full-width items-center justify-between gap-5 no-wrap">
-        <div>Выберите заведение</div>
-        <div
-          class="row box-shadow bg-white-opacity px-4 py-2 border-radius justify-center items-center"
+    <div class="column full-width">
+      <div class="header bold mb-md-15 mb-xs-10">Выберите заведение</div>
+      <div class="column no-wrap full-width gap-md-10 gap-xs-6">
+        <template
+          v-for="(item, index) in $companyGroup.item?.companies"
+          :key="index"
         >
-          <CIcon color="on-secondary-button-color" name="fa-light fa-shop" />
-        </div>
+          <q-separator v-if="index && $q.screen.lt.md" color="divider-color" />
+          <CompanyRow
+            @click="selectCompany(item)"
+            :item="item"
+            :selected="selectedCompany?.id === item.id"
+          />
+        </template>
       </div>
-    </template>
-    <div class="column full-width gap-8">
-      <CompanyRow
-        @click="selectCompany(el)"
-        v-for="(el, index) in $companyGroup.item?.companies"
-        :key="index"
-        :item="el"
+
+      <CButton
+        @click="emitSelectedCompany"
+        :label="$q.screen.lt.md ? 'Выбрать' : 'Выбрать заведение'"
+        :disabled="!selectedCompany"
+        :height="$q.screen.lt.md ? '40px' : '48px'"
+        width="100%"
+        class="body mt-15"
       />
     </div>
   </CDialog>
@@ -27,20 +37,53 @@
 <script lang="ts" setup>
 import { Company } from 'src/models/company/company'
 import CDialog from '../template/dialogs/CDialog.vue'
-import CIcon from '../template/helpers/CIcon.vue'
 import CompanyRow from 'src/pages/profile/CompanyRow.vue'
+import CButton from '../template/buttons/CButton.vue'
+import { ref, watch } from 'vue'
+import { companyRepo } from 'src/models/company/companyRepo'
+import { useEventBus } from '@vueuse/core'
+import { selectCompanyKey } from 'src/services/eventBusKeys'
 
-defineProps<{
+const props = defineProps<{
   modelValue: boolean
+  noClose?: boolean
+  selectedCompany?: Company
+  closeOnSelect?: boolean
 }>()
 
 const emit = defineEmits<{
   (evt: 'update:modelValue', value: boolean): void
-  (evt: 'select', v: Company): void
+  (evt: 'select', v: Company | null): void
 }>()
 
+const selectedCompany = ref<Company | null>(props.selectedCompany || null)
+
+watch(
+  () => props.modelValue,
+  (v) => {
+    if (v && props.selectedCompany)
+      selectedCompany.value = props.selectedCompany
+  }
+)
+
+watch(
+  () => props.modelValue,
+  (v) => {
+    if (v && companyRepo.item) {
+      selectedCompany.value = companyRepo.item
+    }
+  }
+)
+
 const selectCompany = (v: Company) => {
-  // if (v.salesPoints) salesPointRepo.item = v.salesPoints[0]
-  emit('select', v)
+  selectedCompany.value = v
+}
+
+const emitSelectedCompany = () => {
+  useEventBus(selectCompanyKey).emit({
+    company: selectedCompany.value as Company,
+  })
+  emit('select', selectedCompany.value)
+  if (props.closeOnSelect) emit('update:modelValue', false)
 }
 </script>

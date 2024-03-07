@@ -8,11 +8,12 @@ export type LinksSettingsRaw = {
   uuid: string | undefined
   app_enabled: boolean
   company_group: string | undefined
-  android_build_version: number
-  ios_build_version: number
-  android_download_link: string
-  ios_download_link: string
-  app_download_link: string
+  android_build_version: number | null
+  ios_build_version: number | null
+  android_download_link: string | null
+  ios_download_link: string | null
+  app_download_link: string | null
+  app_redirect_link: string | null
 }
 
 export class AppSettings implements BaseModel {
